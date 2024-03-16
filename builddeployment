@@ -1,0 +1,52 @@
+#!/bin/bash
+# Build a Test Clutch install bundle for deploying on Virtuozzo
+# This assume the availability of GNU shell tools.
+set -e
+shopt -s extglob  # needed for git scheme check
+
+# git repo with source code
+readonly GITREPO="${2:-../testclutch/}"
+
+# git tag/branch/tree-ish of source
+readonly TAG="${1:-master}"
+
+# Build bundle for this Python version
+readonly PYVER=3.11
+
+# Use these pip package platforms
+declare -ar PLATFORMS=(linux_x86_64 manylinux2014_x86_64)
+
+# Get source
+test -d build && rm -r build
+mkdir build
+mkdir -p tmp$$git/testclutch
+if [[ -z "${GITREPO/+([-+_a-zA-Z0-9]):*/}" ]]; then
+    # Looks like a remote git URL with a scheme
+    # Options to optimize remote git fetching
+    readonly GITOPTS=--filter=blob:none
+else
+    readonly GITOPTS=
+fi
+
+git clone --shared --branch "$TAG" $GITOPTS "$GITREPO" tmp$$git/testclutch
+
+test -e testclutch_deploy-commit.txt && mv -f testclutch_deploy-commit.txt testclutch_deploy-commit.txt.old
+git -C tmp$$git/testclutch log --pretty=format:'%H testclutch%n' HEAD^..HEAD > testclutch_deploy-commit.txt
+
+# Get Python dependencies and install everything under build/
+python3 -m pip install --disable-pip-version-check --isolated --target="$PWD/build/application/python" --no-compile --python-version="$PYVER" --implementation=cp "${PLATFORMS[@]/#/--platform=}" --only-binary=:all: tmp$$git/testclutch
+test -e testclutch_deploy-requirements.txt && mv -f testclutch_deploy-requirements.txt testclutch_deploy-requirements.txt.old
+python3 -m pip list --disable-pip-version-check --isolated --path="$PWD/build/application/python" --format=freeze > testclutch_deploy-requirements.txt
+rm -r tmp$$git
+
+# Remove dist-info directories, which aren't needed on the target
+rm -r build/application/python/*.dist-info
+
+# Add static files to the install bundle
+cp -r --preserve=timestamps distfiles/. build
+
+# Build bundle from staging area
+tar -C build --xz -cf testclutch_deploy.tar.xz .
+rm -r build
+
+echo 'Done: testclutch_deploy.tar.xz'

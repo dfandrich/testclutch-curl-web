@@ -1,0 +1,90 @@
+#!/bin/bash
+# Daily job to download logs and generate reports
+. "$(dirname "$0")"/setup-vars
+
+# Log lines (may) begin with <level>
+readonly LOGCMD='systemd-cat --level-prefix=true --priority=warning'
+# Log lines do not begin with <level>
+readonly LOGCMDNOLVL='systemd-cat --level-prefix=false --priority=warning'
+# First argument is an identifier; this is used in a pipe where the command can't be identified
+readonly LOGCMDID='systemd-cat --level-prefix=true --priority=warning --identifier'
+
+# Enable syslog prefixes on logs, and optionally the verbosity level
+#readonly VERBOSITY=--debug --level-prefix
+readonly VERBOSITY="--verbose --level-prefix"
+
+# Enable dry-run mode on those programs that offer it
+#readonly DRY=--dry-run
+readonly DRY=
+
+# Directory holding public summary reports
+readonly REPORTROOT="$HOME/ROOT/static/reports"
+
+# Number of hours of logs to bring in on every run
+# This must be larger than the time between cron runs to avoid missing logs.
+readonly HOURS=4
+
+# Download logs
+$LOGCMD tcingestlog $VERBOSITY $DRY --origin=appveyor --account=curlorg --howrecent $HOURS
+$LOGCMD tcingestlog $VERBOSITY $DRY --origin=azure --account daniel0244 --howrecent $HOURS
+$LOGCMD tcingestlog $VERBOSITY $DRY --origin=cirrus --howrecent $HOURS
+$LOGCMD tcingestlog $VERBOSITY $DRY --origin=circle --howrecent $HOURS
+$LOGCMD tcingestlog $VERBOSITY $DRY --origin=curlauto --howrecent $HOURS
+if [[ -r "$XDG_DATA_HOME/auth/ghatoken" ]]; then
+    $LOGCMD tcingestlog $VERBOSITY $DRY --origin=gha --authfile "$XDG_DATA_HOME/auth/ghatoken" --howrecent $HOURS
+else
+    $LOGCMDNOLVL echo Skipping GHA ingestion due to no available token
+fi
+
+# The following must be done at least once a day, regardless of $HOURS
+# The Time zone used should ensure that that the daily build has been created for the day already
+readonly CURLFILE=$(curl -LsSf --max-time 999 --compressed https://curl.se/snapshots/ | sed -n -Ee '/NEWEST tar.xz/s/^.*(curl-[-.[:alnum:]]+\.tar\.xz).*$/\1/p')
+readonly CURLDAILYPATH="$XDG_CACHE_HOME/curldaily/$CURLFILE"
+if [[ -z "$CURLFILE" ]]; then
+    $LOGCMDNOLVL echo Error determining daily curl
+else
+    if [[ -f "$CURLDAILYPATH" ]]; then
+        $LOGCMDNOLVL echo "Daily build source file $CURLFILE is already downloaded!"
+    else
+        # --retry-connrefused should be added if the curl version supports it
+        $LOGCMDNOLVL curl -o "$CURLDAILYPATH" -LsSf --max-time 999 --retry 6 --xattr "https://curl.se/snapshots/$CURLFILE"
+    fi
+fi
+
+# The following must be done at least once a day (well, once every two days due to the next section)
+if [[ -f "$CURLDAILYPATH" ]]; then
+    $LOGCMD tcaugmentcurldaily $VERBOSITY $DRY "$CURLDAILYPATH"
+else
+    $LOGCMDNOLVL echo "Daily curl build file $CURLFILE could not be downloaded!"
+fi
+
+# Update the git checkout
+# git 1.8.3 doesn't support -C to select the repository to use
+$LOGCMDNOLVL env GIT_DIR="$XDG_DATA_HOME/curl.git" git fetch origin master:master
+# Since this is done entirely locally, always ingest a lot more than we need to to reduce
+# the chance of a commit being missed.
+readonly GITHOURS=$(($HOURS * 50))
+$LOGCMD tcgitcommitinfo $VERBOSITY $DRY "$XDG_DATA_HOME/curl.git" "$GITHOURS hours ago"
+# If this shows an error, use commitchainrev to start at the given commit and use the last
+# "commit" in the list as the last parameter in this command:
+if ! $LOGCMDNOLVL tcdbutil checkcommitchain https://github.com/curl/curl master ff67da58c4add27b05d237533d1cb39fb3894113; then
+    tcdbutil commitchainrev https://github.com/curl/curl master | tail -8 | $LOGCMDID tcdbutil
+fi
+
+$LOGCMD tcaugmentgithash $VERBOSITY $DRY
+
+# Generate reports
+
+REPORTTMP="$(mktemp "$REPORTROOT/tmp.XXXXXXXXXX")"
+tcmetadatastats $VERBOSITY --html --report=metadata_values 2>&1 > "$REPORTTMP" | $LOGCMDID tcmetadatastats
+mv "$REPORTTMP" "$REPORTROOT"/metadata-summary.html
+
+REPORTTMP="$(mktemp "$REPORTROOT/tmp.XXXXXXXXXX")"
+tcmetadatastats $VERBOSITY --html --report=test_run_stats 2>&1 > "$REPORTTMP" | $LOGCMDID tcmetadatastats
+mv "$REPORTTMP" "$REPORTROOT"/test-stats.html
+
+REPORTTMP="$(mktemp "$REPORTROOT/tmp.XXXXXXXXXX")"
+tcanalysissum $VERBOSITY --html 2>&1 > "$REPORTTMP" | $LOGCMDID tcanalysissum
+mv "$REPORTTMP" "$REPORTROOT"/summary.html
+
+$LOGCMDNOLVL echo Completed daily update

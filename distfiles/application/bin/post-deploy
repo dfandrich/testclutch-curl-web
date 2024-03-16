@@ -1,0 +1,71 @@
+#!/bin/bash
+# Set this as the Virtuozzo post-deploy script
+# Logs go into Virtuozzo's post-deploy log
+
+# Unique setup version; bump whenever the nonvolatile setup changes
+readonly SETUPVERSION=1
+
+. "$(dirname "$0")"/setup-vars
+
+###############################
+# First, set up volatile application container
+# This needs to be done more frequently
+
+# Create empty directories
+mkdir -p "$HOME/ROOT/static/"
+
+# Set an expires on static files for better caching
+# HTML is so low because they are mostly reports that are regenerated frequently
+# Note that this can't go into /etc/httpd/ because the server starts before we
+# have a chance to modify its configuration.
+cat >"$HOME/ROOT/static/.htaccess" <<EOF
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/html "access plus 5 minutes"
+    ExpiresByType image/jpeg "access plus 2 days"
+    ExpiresByType image/png "access plus 2 days"
+    ExpiresByType image/svg+xml "access plus 2 days"
+    ExpiresByType text/css "access plus 2 days"
+    ExpiresByType text/plain "access plus 2 days"
+</IfModule>
+EOF
+
+# Create symlink so reports get stored on nonvolatile storage
+ln -s "$XDG_DATA_HOME/reports" "$HOME/ROOT/static"
+
+# Set up cron jobs; this has its own check to avoid duplicating cron jobs when
+# run more than once
+EDITOR="$(dirname "$0")"/append-cron-jobs crontab -e
+
+###############################
+# Next, set up the nonvolatile data storage container
+# This only needs to be done once, when the web app is first configured, and
+# then again only if the configuration changes, which is indicated by
+# SETUPVERSION changing.
+# Note that /data is mounted on demand (so it's not there before the first
+# access) then unmounted automatically again after a few minutes.
+if [[ "$(cat "$XDG_DATA_HOME/setup-version")" == "$SETUPVERSION" ]]; then
+# If we've already run this script before at this version. it means either:
+# - someone has done "Redeploy Containers" with "Keep volume data" on,
+#   in which case there's nothing more to set up, or
+# - we've switch to persistent storage and we've already setup at this
+#   setup version and there's nothing new to do
+    echo "Already set up at version $SETUPVERSION; nothing new to set up"
+    exit 0
+fi
+
+# Create empty directories
+mkdir -p "$XDG_DATA_HOME"/reports
+mkdir -m 0700 "$XDG_DATA_HOME"/auth
+mkdir -p "$XDG_CACHE_HOME"
+mkdir -p "$XDG_CACHE_HOME"/curldaily
+
+# Seed the git checkout
+# git 1.8 doesn't support --filter=blob:none or --shallow-since='90 days ago'
+# so use --depth=500 which gives about 90 days
+# If the repo already exists, this will just error out and be skipped.
+git clone --bare --depth=500 https://github.com/curl/curl.git "$XDG_DATA_HOME"/curl.git
+
+# Completed setup
+echo "$SETUPVERSION" > "$XDG_DATA_HOME/setup-version"
+echo Completed post-deploy
