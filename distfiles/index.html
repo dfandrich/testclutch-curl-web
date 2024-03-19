@@ -19,6 +19,33 @@ Regression test data and analysis
 <a href="static/reports/test-stats.html">Test run statistics</a>
 <p>
 <a href="static/reports/metadata-summary.html">Test run metadata summary</a>
+
+<h2>What is Test Clutch?</h2>
+
+Test Clutch is a test run aggregation and analysis system. It continually
+collects the results of test runs from Continuous Integration (CI) systems that
+run regression tests on newly-committed source code. Those test results are
+analyzed and displayed so developers can extract useful information from them
+that isn't easily obtained by looking at test runs one at a time.
+
+<p>
+It is designed especially for projects with many tests running on (potentially)
+many different CI systems. The <a href="https://curl.se/">curl project</a> is a
+good example. It has two independent test suites totalling thousands of test
+cases that are run on dozens of different build configurations. Every single
+code change can cause over 100,000 individual tests to be run on over 100
+different servers.  With that many tests being run, even a tiny false
+positive rate makes it hard to tell if a failed test is a genuine problem or
+just a flaky test. This site is a Test Clutch installation tailored for curl.
+
+<p>
+Test Clutch is intended to make testing code just a little bit easier.
+See the <a href="https://github.com/dfandrich/testclutch/blob/master/README.md">README file</a>
+for a sense of where we're going with this.  It's early days, so come back
+often to see how things are progressing!  It's all Open Source, so feel free to
+jump in and help out if you share the vision of improving presentation of
+test results.
+
 <hr>
 <a href="https://curl.se/">cURL home page</a>
 <p>
