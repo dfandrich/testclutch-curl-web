@@ -25,6 +25,25 @@ readonly REPORTROOT="$HOME/ROOT/static/reports"
 # and ideally more than the time between two runs in case one is skipped.
 readonly HOURS=17
 
+# Look for an old job still running.
+# It's really slow if it is, but give it a chance to finish.
+readonly LOCKFILE="$XDG_RUNTIME_DIR"/tc-update.lock
+
+if [[ -e "$LOCKFILE" ]]; then
+    $LOGCMDNOLVL echo "Update lock already exists (PID $(cat "$LOCKFILE"))"
+    $LOGCMDNOLVL echo -n Lock created:
+    $LOGCMDNOLVL ls -l "$LOCKFILE"
+    if ps -p "$(cat "$LOCKFILE")" > /dev/null; then
+        $LOGCMDNOLVL echo "Process is still running; aborting"
+        exit 1
+    fi
+    $LOGCMDNOLVL echo Deleting stale lock
+    # No need to actually delete anything; the lock will be overwritten instead.
+    # Note that there is still a brief race condition here, but it shouldn't cause any issue in
+    # reality because this script is run (and the lock checked) only every few hours.
+fi
+echo $$ > "$LOCKFILE"
+
 # Download logs
 $LOGCMD tcingestlog $VERBOSITY $DRY --origin=appveyor --account=curlorg --howrecent $HOURS
 $LOGCMD tcingestlog $VERBOSITY $DRY --origin=azure --account daniel0244 --howrecent $HOURS
@@ -64,7 +83,7 @@ fi
 $LOGCMDNOLVL env GIT_DIR="$XDG_DATA_HOME/curl.git" git fetch origin master:master
 # Since this is done entirely locally, always ingest a lot more than we need to to reduce
 # the chance of a commit being missed.
-readonly GITHOURS=$(($HOURS * 50))
+readonly GITHOURS=$((HOURS * 50))
 $LOGCMD tcgitcommitinfo $VERBOSITY $DRY "$XDG_DATA_HOME/curl.git" "$GITHOURS hours ago"
 # If this shows an error, use commitchainrev to start at the given commit and use the last
 # "commit" in the list as the last parameter in this command:
@@ -87,5 +106,8 @@ mv "$REPORTTMP" "$REPORTROOT"/test-stats.html
 REPORTTMP="$(mktemp "$REPORTROOT/tmp.XXXXXXXXXX")"
 tcanalysissum $VERBOSITY --html 2>&1 > "$REPORTTMP" | $LOGCMDID tcanalysissum
 mv "$REPORTTMP" "$REPORTROOT"/summary.html
+
+# Delete run lock file at end
+rm -f "$LOCKFILE"
 
 $LOGCMDNOLVL echo Completed daily update

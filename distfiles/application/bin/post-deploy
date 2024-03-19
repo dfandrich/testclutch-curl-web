@@ -13,6 +13,7 @@ readonly SETUPVERSION=1
 
 # Create empty directories
 mkdir -p "$HOME/ROOT/static/"
+mkdir -p "$XDG_RUNTIME_DIR"
 
 # Set an expires on static files for better caching
 # HTML is so low because they are mostly reports that are regenerated frequently
