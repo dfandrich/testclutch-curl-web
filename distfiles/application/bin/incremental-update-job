@@ -21,8 +21,9 @@ readonly DRY=
 readonly REPORTROOT="$HOME/ROOT/static/reports"
 
 # Number of hours of logs to bring in on every run
-# This must be larger than the time between cron runs to avoid missing logs.
-readonly HOURS=4
+# This must be larger than the time between cron runs to avoid missing logs,
+# and ideally more than the time between two runs in case one is skipped.
+readonly HOURS=17
 
 # Download logs
 $LOGCMD tcingestlog $VERBOSITY $DRY --origin=appveyor --account=curlorg --howrecent $HOURS
