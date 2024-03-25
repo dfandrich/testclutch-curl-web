@@ -11,9 +11,9 @@ fi
 # Add an extra blank link at the end because the comment in crontab -l asks for one
 cat >> "$1" <<EOF
 # Periodic ingest job
-10 */8 * * * /var/www/webroot/ROOT/application/bin/incremental-update-job
+10 */6 * * * /var/www/webroot/ROOT/application/bin/incremental-update-job
 # Daily cache clean job
-40 1 * * * systemd-cat /var/www/webroot/ROOT/application/bin/clean-cache-job
+50 23 * * * systemd-cat /var/www/webroot/ROOT/application/bin/clean-cache-job
 # Blank line (because we're asked to)
 
 EOF

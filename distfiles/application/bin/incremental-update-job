@@ -2,6 +2,11 @@
 # Daily job to download logs and generate reports
 . "$(dirname "$0")"/setup-vars
 
+# Number of hours of logs to bring in on every run
+# This must be larger than the time between cron runs to avoid missing logs,
+# and ideally more than the time between two runs in case one is skipped.
+readonly HOURS=14
+
 # Log lines (may) begin with <level>
 readonly LOGCMD='systemd-cat --level-prefix=true --priority=warning'
 # Log lines do not begin with <level>
@@ -20,10 +25,7 @@ readonly DRY=
 # Directory holding public summary reports
 readonly REPORTROOT="$HOME/ROOT/static/reports"
 
-# Number of hours of logs to bring in on every run
-# This must be larger than the time between cron runs to avoid missing logs,
-# and ideally more than the time between two runs in case one is skipped.
-readonly HOURS=17
+$LOGCMDNOLVL echo Starting daily update
 
 # Look for an old job still running.
 # It's really slow if it is, but give it a chance to finish.
