@@ -80,6 +80,13 @@ else
     $LOGCMDNOLVL echo "Daily curl build file $CURLFILE could not be downloaded!"
 fi
 
+# Augment yesterday's daily builds, too, because it can be many hours before some autobuilds become
+# available and we want to augment them even if they show up after the new daily build is ready.
+readonly YESTERDAY="$(TZ=UTC date -d yesterday +'%Y%m%d')"
+if ls "$XDG_CACHE_HOME/curldaily/"*-"$YESTERDAY"* >/dev/null 2>&1; then
+    $LOGCMD tcaugmentcurldaily $VERBOSITY $DRY "$XDG_CACHE_HOME/curldaily/"*-"$YESTERDAY"*
+fi
+
 # Update the git checkout
 # git 1.8.3 doesn't support -C to select the repository to use
 $LOGCMDNOLVL env GIT_DIR="$XDG_DATA_HOME/curl.git" git fetch origin master:master
