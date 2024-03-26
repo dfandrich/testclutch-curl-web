@@ -1,19 +1,28 @@
 # Test Clutch deployment for curl
 
-This repository contains the files needed to deploy an instance of Test Clutch
-customized for the curl project to Virtuozzo Application Platform cloud
-service.
+This repository contains the files needed to deploy an instance of [Test
+Clutch](https://github.com/dfandrich/testclutch/) customized for the curl
+project to a host running Virtuozzo Application Platform cloud service.
 
 # Installation
+
+The latest source can be obtained from
+https://github.com/dfandrich/testclutch-curl-web/
 
 The build scripts require Python 3 (ver. 3.8 or higher) with the `pip` package,
 as well as `git`.
 
-Run `./builddeployment` to create `testclutch_deploy.tar.xz`. This assumes the
+Run `./builddeployment` to create `testclutch_deploy.tar.xz`, a deployment
+bundle that contains the static web content, Python source code as well as all
+the necessary Test Clutch source code and dependencies. The script assumes the
 testclutch source is in the directory `../testclutch/` and the `master` branch
 is the version to deploy. To change these, run the script with the `GITREPO`
 and `TAG` variables pointing to a git repository location (local or remote) and
 branch or tag, respectively.
+
+The script writes the files `testclutch_deploy-commit.txt` and
+`testclutch_deploy-requirements.txt` which contain the commit ID of the
+testclutch source and the Python modules and their versions used, respectively.
 
 # Environment Setup
 
@@ -76,7 +85,7 @@ Copy the token contents from the web browser and store it in a file called
 `ghatoken` in a protected location on your local machine. Use the *Application
 Servers - Config* menu in Virtuozzo to upload that file to the container in the
 location `/data/auth/ghatoken`. Once the file is there, the periodic update job
-will start downloading GitHub Actions logs.
+will start downloading GitHub Actions logs on its next run.
 
 # Logs
 
