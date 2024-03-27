@@ -82,7 +82,10 @@ fi
 
 # Augment yesterday's daily builds, too, because it can be many hours before some autobuilds become
 # available and we want to augment them even if they show up after the new daily build is ready.
-readonly YESTERDAY="$(TZ=UTC date -d yesterday +'%Y%m%d')"
+# Use 1 hour past UTC as the time zone to give a run starting within an hour after midnight an
+# extra hour to do something useful, since otherwise it will almost certainly have the same date
+# as the daily file we just checked above.
+readonly YESTERDAY="$(TZ=UTC+1 date -d yesterday +'%Y%m%d')"
 if ls "$XDG_CACHE_HOME/curldaily/"*-"$YESTERDAY"* >/dev/null 2>&1; then
     $LOGCMD tcaugmentcurldaily $VERBOSITY $DRY "$XDG_CACHE_HOME/curldaily/"*-"$YESTERDAY"*
 fi
