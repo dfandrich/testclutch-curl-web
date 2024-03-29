@@ -10,15 +10,14 @@ The latest source can be obtained from
 https://github.com/dfandrich/testclutch-curl-web/
 
 The build scripts require Python 3 (ver. 3.8 or higher) with the `pip` package,
-as well as `git`.
+as well as `git` and `xz`.
 
 Run `./builddeployment` to create `testclutch_deploy.tar.xz`, a deployment
 bundle that contains the static web content, Python source code as well as all
 the necessary Test Clutch source code and dependencies. The script assumes the
 testclutch source is in the directory `../testclutch/` and the `master` branch
-is the version to deploy. To change these, run the script with the `GITREPO`
-and `TAG` variables pointing to a git repository location (local or remote) and
-branch or tag, respectively.
+is the version to deploy. To change these, run the script with two arguments of
+branch or tag and git repository location (local or remote), respectively.
 
 The script writes the files `testclutch_deploy-commit.txt` and
 `testclutch_deploy-requirements.txt` which contain the commit ID of the
@@ -52,6 +51,8 @@ environment from scratch by following these steps:
 0. In *Application Servers*, *Settings→Volumes*
     - Choose Add, Data Container, Shared Storage node, click checkbox for
       `/data /data`, then *Add*, *Apply*
+0. In *Application Servers*, *Settings→Load Alerts*
+    - Change the *auto_alert_cpu* threshold to 80%.
 
 # Deployment
 
