@@ -1,0 +1,44 @@
+# Github Actions configuration
+name: Build
+
+permissions: {}
+
+on:
+  # Trigger the workflow on push or pull requests, but only for the
+  # master and ci branches
+  push:
+    branches:
+      - master
+      - ci
+  pull_request:
+    branches:
+      - master
+
+env:
+  GITREPO: https://github.com/dfandrich/testclutch.git
+  GITBRANCH: master
+  DEBIAN_FRONTEND: noninteractive
+
+jobs:
+  build_deployment:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: 'install deps'
+        run: >
+            sudo apt-get update -y
+            && sudo apt-get install -y --no-install-suggests --no-install-recommends
+            python3-pip git xz-utils
+      - name: 'build'
+        run: ./builddeployment "$GITBRANCH" "$GITREPO"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: testclutch_deploy.tar.xz
+          path: testclutch_deploy.tar.xz
+          retention-days: ${{ github.ref == 'refs/heads/master' && 30 || 14 }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: testclutch_deploy.txt
+          path: testclutch_deploy-*.txt
+          retention-days: ${{ github.ref == 'refs/heads/master' && 365 || 14 }}
