@@ -34,7 +34,7 @@ test -e testclutch_deploy-commit.txt && mv -f testclutch_deploy-commit.txt testc
 git -C tmp$$git/testclutch log --pretty=format:'%H testclutch%n' HEAD^..HEAD > testclutch_deploy-commit.txt
 
 # Get Python dependencies and install everything under build/
-python3 -m pip install --disable-pip-version-check --isolated --target="$PWD/build/application/python" --no-compile --python-version="$PYVER" --implementation=cp "${PLATFORMS[@]/#/--platform=}" --only-binary=:all: tmp$$git/testclutch
+python3 -m pip install --disable-pip-version-check --isolated --target="$PWD/build/application/python" --no-compile --python-version="$PYVER" --implementation=cp "${PLATFORMS[@]/#/--platform=}" --only-binary=:all: -r requirements-testclutch.txt tmp$$git/testclutch
 test -e testclutch_deploy-requirements.txt && mv -f testclutch_deploy-requirements.txt testclutch_deploy-requirements.txt.old
 python3 -m pip list --disable-pip-version-check --isolated --path="$PWD/build/application/python" --format=freeze > testclutch_deploy-requirements.txt
 rm -r tmp$$git
