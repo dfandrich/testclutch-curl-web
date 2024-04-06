@@ -1,19 +1,19 @@
 #!/bin/bash
 # Editor for adding cron jobs to the user crontab using crontab -e
-# It will skip adding if the jobs have already been added
+# Existing Test Clutch jobs will be removed
 
-if grep -q "bin/incremental-update-job" "$1"; then
-    # Canary job already exists
-    exit 0;
-fi
+# Delete the existing jobs and the blank last line of the file
+sed -i -e '/^# TESTCLUTCH START/,/^# TESTCLUTCH END/d' -e '${/^$/d}' "$1"
 
 # Append the new entries
 # Add an extra blank link at the end because the comment in crontab -l asks for one
 cat >> "$1" <<EOF
+# TESTCLUTCH START
 # Periodic ingest job
 10 */6 * * * /var/www/webroot/ROOT/application/bin/incremental-update-job
 # Daily cache clean job
 50 23 * * * systemd-cat /var/www/webroot/ROOT/application/bin/clean-cache-job
-# Blank line (because we're asked to)
+# Blank line at end (because we're asked to)
+# TESTCLUTCH END
 
 EOF
