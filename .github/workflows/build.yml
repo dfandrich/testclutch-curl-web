@@ -41,4 +41,4 @@ jobs:
         with:
           name: testclutch_deploy.txt
           path: testclutch_deploy-*.txt
-          retention-days: ${{ github.ref == 'refs/heads/master' && 365 || 14 }}
+          retention-days: ${{ github.ref == 'refs/heads/master' && 90 || 14 }}
