@@ -17,36 +17,39 @@ readonly PYVER=3.11
 declare -ar PLATFORMS=(linux_x86_64 manylinux2014_x86_64)
 
 # Get source
-test -d build && rm -r build
+test -d build && rm -rf build
 mkdir build
 mkdir -p tmp$$git/testclutch
-if [[ -z "${GITREPO/+([-+_a-zA-Z0-9]):*/}" ]]; then
-    # Looks like a remote git URL with a scheme
+if [[ -z "${GITREPO/+([-+_a-zA-Z0-9]):*/}" && "${GITREPO:0:5}" != "file:" ]]; then
+    # Looks like a remote git URL with a remote scheme
     # Options to optimize remote git fetching
-    readonly GITOPTS=--filter=blob:none
+    readonly GITOPTS=--depth=1
 else
-    readonly GITOPTS=
+    readonly GITOPTS=--shared
 fi
 
-git clone --shared --branch "$TAG" $GITOPTS "$GITREPO" tmp$$git/testclutch
+git clone --branch "$TAG" $GITOPTS "$GITREPO" tmp$$git/testclutch
 
 test -e testclutch_deploy-commit.txt && mv -f testclutch_deploy-commit.txt testclutch_deploy-commit.txt.old
-git -C tmp$$git/testclutch log --pretty=format:'%H testclutch%n' HEAD^..HEAD > testclutch_deploy-commit.txt
+echo "$(git -C tmp$$git/testclutch rev-parse HEAD)" testclutch > testclutch_deploy-commit.txt
+
+# Update local pip first (if necessary)
+python3 -m pip install 'pip>=23'
 
 # Get Python dependencies and install everything under build/
 python3 -m pip install --disable-pip-version-check --isolated --target="$PWD/build/application/python" --no-compile --python-version="$PYVER" --implementation=cp "${PLATFORMS[@]/#/--platform=}" --only-binary=:all: -r requirements-testclutch.txt tmp$$git/testclutch
 test -e testclutch_deploy-requirements.txt && mv -f testclutch_deploy-requirements.txt testclutch_deploy-requirements.txt.old
 python3 -m pip list --disable-pip-version-check --isolated --path="$PWD/build/application/python" --format=freeze > testclutch_deploy-requirements.txt
-rm -r tmp$$git
+rm -rf tmp$$git
 
 # Remove dist-info directories, which aren't needed on the target
-rm -r build/application/python/*.dist-info
+rm -rf build/application/python/*.dist-info
 
 # Add static files to the install bundle
 cp -r --preserve=timestamps distfiles/. build
 
 # Build bundle from staging area
 tar -C build --xz -cf testclutch_deploy.tar.xz .
-rm -r build
+rm -rf build
 
 echo 'Done: testclutch_deploy.tar.xz'
