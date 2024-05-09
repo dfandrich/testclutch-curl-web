@@ -7,6 +7,10 @@
 # and ideally more than the time between two runs in case one is skipped.
 readonly HOURS=14
 
+# Number of hours for statistics jobs that take too much memory to run for
+# the full 90 days
+readonly REDUCEDSTATSHOURS=240  # 240 is 10 days
+
 # Log lines (may) begin with <level>
 readonly LOGCMD='systemd-cat --level-prefix=true --priority=warning'
 # Log lines do not begin with <level>
@@ -112,8 +116,12 @@ tcmetadatastats $VERBOSITY --html --report=metadata_values 2>&1 > "$REPORTTMP" |
 mv "$REPORTTMP" "$REPORTROOT"/metadata-summary.html
 
 REPORTTMP="$(mktemp "$REPORTROOT/tmp.XXXXXXXXXX")"
-tcmetadatastats $VERBOSITY --html --report=test_run_stats 2>&1 > "$REPORTTMP" | $LOGCMDID tcmetadatastats
+tcmetadatastats $VERBOSITY --html --report=test_run_stats --howrecent="$REDUCEDSTATSHOURS" 2>&1 > "$REPORTTMP" | $LOGCMDID tcmetadatastats
 mv "$REPORTTMP" "$REPORTROOT"/test-stats.html
+
+REPORTTMP="$(mktemp "$REPORTROOT/tmp.XXXXXXXXXX")"
+tcmetadatastats $VERBOSITY --html --report=test_results_count --howrecent="$REDUCEDSTATSHOURS" 2>&1 > "$REPORTTMP" | $LOGCMDID tcmetadatastats
+mv "$REPORTTMP" "$REPORTROOT"/results-count.html
 
 REPORTTMP="$(mktemp "$REPORTROOT/tmp.XXXXXXXXXX")"
 tcanalysissum $VERBOSITY --html 2>&1 > "$REPORTTMP" | $LOGCMDID tcanalysissum
