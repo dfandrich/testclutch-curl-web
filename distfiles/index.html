@@ -14,13 +14,54 @@ Regression test data and analysis
 <i>(pre-alpha release)</i>
 
 <h2>Recent Reports</h2>
-<a href="static/reports/summary.html">Test results summary</a>
-<p>
-<a href="static/reports/results-count.html">Counts of recent test failures</a>
-<p>
-<a href="static/reports/test-stats.html">Test run statistics</a>
-<p>
-<a href="static/reports/metadata-summary.html">Test run metadata summary</a>
+
+<details><summary><a href="static/reports/summary.html">Test results summary</a></summary>
+This report shows all the test runs performed recently curl's master branch.
+More recent runs are on the left side of the page, while older ones are on the
+right (you may need to scroll to see them all).  Successful test runs are
+highlighted in green and show the number of passed tests, while unsuccessful
+ones are red and show the number of failed tests. Test runs that were aborted
+are coloured yellow and show the number of passed tests. Clicking on the number
+will take you to the test log that will show you details of the run. Different
+shades of colour are used for runs older than a few days. Obsolete test run
+configurations that are no longer being used have their names with a grey
+background. Test configurations that have experienced flaky tests in the time
+frame shown say <em>flaky</em> while those that are currently always failing say
+<em>permafail</em>. Hovering over any coloured square will show you more details
+about that test or run.
+</details>
+<br>
+
+<details><summary><a href="static/reports/results-count.html">Counts of recent
+            test failures</a></summary>
+This report shows a list of tests that have recently failed. It is ordered with
+the tests experiencing the most failures at the top and those with the fewest
+failures at the bottom. The kind of failure is shown in the <em>Result</em>
+column. <em>FAIL</em> is a normal failure, <em>FAILIGNORE</em> is a failure that
+was suppressed (usually for tests that are known not to work in a
+configuration), and <em>UNKNOWN</em> is for tests whose result could not be
+determined, such as when a test run aborted or timed out before its status could
+be determined.
+</details>
+<br>
+
+<details><summary><a href="static/reports/test-stats.html">Test run
+            statistics</a></summary>
+This report shows many statistics about recent test runs.
+</details>
+<br>
+
+<details><summary><a href="static/reports/metadata-summary.html">Test run
+            metadata summary</a></summary>
+This report shows all the metadata fields set in recent tests. Not all fields
+are set for every test run; some are only available in certain configurations.
+Clicking on the field name will show you all the values set in the tests, except
+for certain fields where that would show too many values that are not very
+interesting (such as the time each test started). More information is available
+about the meaning of some
+<a href="https://github.com/dfandrich/testclutch/blob/master/metadata.md">
+metadata fields</a>.
+</details>
 
 <h2>What is Test Clutch?</h2>
 
