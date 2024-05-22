@@ -9,7 +9,7 @@ readonly HOURS=14
 
 # Number of hours for statistics jobs that take too much memory to run for
 # the full 90 days
-readonly REDUCEDSTATSHOURS=720  # 720 is 30 days
+readonly REDUCEDSTATSHOURS=504  # 504 is 21 days
 
 # Log lines (may) begin with <level>
 readonly LOGCMD='systemd-cat --level-prefix=true --priority=warning'
