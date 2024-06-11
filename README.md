@@ -35,8 +35,8 @@ environment from scratch by following these steps:
 0. Choose *NEW ENVIRONMENT*
 0. At the top of the environment topology diagram, click *SSL* and *enable wildcard SSL*
 0. in the *Application* block, choose *Apache Python*
-    - tested version: Apache 2.4.58
-    - tested version: Python 3.11.8
+    - tested version: Apache 2.4.59
+    - tested version: Python 3.11.9
 0. Under *Application Servers*:
     - 1 reserved cloudlet, 1 scaling limit, 1 horizontal scaling
     - horizontal scaling: stateless
@@ -75,7 +75,10 @@ To update the software, just upload a new bundle and deploy it as before. The
 When using the *Redeploy* option to updates the application servers, ensure
 that *Keep volume data* is ON. If redeployment happens with that off, the
 application code will be gone and there will be a site outage until you deploy
-a bundle again.
+a bundle again. Once the redeployment completes, log in via ssh and manually
+run the post deploy script */var/www/webroot/ROOT/application/bin/post-deploy*.
+This is necessary because the crontab file is not preserved over the
+redeployment.
 
 # Tokens
 
