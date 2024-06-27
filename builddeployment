@@ -33,7 +33,11 @@ git clone --branch "$TAG" $GITOPTS "$GITREPO" tmp$$git/testclutch
 test -e testclutch_deploy-commit.txt && mv -f testclutch_deploy-commit.txt testclutch_deploy-commit.txt.old
 echo "$(git -C tmp$$git/testclutch rev-parse HEAD)" testclutch > testclutch_deploy-commit.txt
 
-# Update local pip first (if necessary)
+# Start virtual environment to avoid touching system packages (mostly pip)
+python3 -m venv .venv-builddeployment
+source .venv-builddeployment/bin/activate
+
+# Update local pip first (if necessary); ver. before 23 don't work quite right
 python3 -m pip install 'pip>=23'
 
 # Check if the Python version available here matches the run-time
@@ -55,7 +59,8 @@ fi
 # version of python is available when this script is run (done by the check
 # above).  The second issue can be overcome by moving the files from
 # __pycache__ to the parent directory then each renamed (to FOO.pyc) (pip
-# doesn't seem to offer an option to avoid __pycache__ and name mangling).
+# doesn't seem to offer an option to avoid __pycache__ and name mangling, but
+# -X pycache_prefix=PATH might be utilized for this).
 # But even if this is done, the run-time savings are likely to be pretty minimal
 # since these are all fairly long-running scripts whose compile times are
 # amortized over long run times.
@@ -63,6 +68,10 @@ python3 -m pip install --disable-pip-version-check --isolated --target="$PWD/bui
 test -e testclutch_deploy-requirements.txt && mv -f testclutch_deploy-requirements.txt testclutch_deploy-requirements.txt.old
 python3 -m pip list --disable-pip-version-check --isolated --path="$PWD/build/application/python" --format=freeze > testclutch_deploy-requirements.txt
 rm -rf tmp$$git
+
+# Fix the shebang at the start of the script which points to a venv python
+# which we don't want in the distribution archive
+sed -i -e '1s@#!.*$@#!/usr/bin/python3@' build/application/python/bin/*
 
 # Remove dist-info directories, which aren't needed on the target
 rm -rf build/application/python/*.dist-info
@@ -73,5 +82,9 @@ cp -r --preserve=timestamps distfiles/. build
 # Build bundle from staging area
 tar -C build --xz -cf testclutch_deploy.tar.xz .
 rm -rf build
+
+# Deactivate and clean up virtual environment
+deactivate
+rm -r .venv-builddeployment
 
 echo 'Done: testclutch_deploy.tar.xz'
