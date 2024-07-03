@@ -36,7 +36,7 @@ ln -s "$XDG_DATA_HOME/reports" "$HOME/ROOT/static"
 
 # Set up cron jobs; this has its own check to avoid duplicating cron jobs when
 # run more than once
-EDITOR="$(dirname "$0")"/append-cron-jobs crontab -e
+EDITOR="$(dirname "$0")"/install-cron-jobs crontab -e
 
 ###############################
 # Next, set up the nonvolatile data storage container

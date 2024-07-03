@@ -10,9 +10,9 @@ sed -i -e '/^# TESTCLUTCH START/,/^# TESTCLUTCH END/d' -e '${/^$/d}' "$1"
 cat >> "$1" <<EOF
 # TESTCLUTCH START
 # Periodic ingest job
-10 */6 * * * /var/www/webroot/ROOT/application/bin/incremental-update-job
+10 */8 * * * /var/www/webroot/ROOT/application/bin/incremental-update-job
 # Daily cache clean job
-50 23 * * * systemd-cat /var/www/webroot/ROOT/application/bin/clean-cache-job
+55 23 * * * systemd-cat /var/www/webroot/ROOT/application/bin/clean-cache-job
 # Blank line at end (because we're asked to)
 # TESTCLUTCH END
 
