@@ -1,0 +1,45 @@
+#!/bin/bash
+# Job to analyze outstanding PRs for test issues and add a comment when
+# something is found.
+. "$(dirname "$0")"/setup-vars
+
+# Log lines (may) begin with <level>
+readonly LOGCMD='systemd-cat --level-prefix=true --priority=warning'
+# Log lines do not begin with <level>
+readonly LOGCMDNOLVL='systemd-cat --level-prefix=false --priority=warning'
+# First argument is an identifier; this is used in a pipe where the command can't be identified
+readonly LOGCMDID='systemd-cat --level-prefix=true --priority=warning --identifier'
+
+# Enable syslog prefixes on logs, and optionally the verbosity level
+#readonly VERBOSITY=--debug --level-prefix
+readonly VERBOSITY="--verbose --level-prefix"
+
+###########
+# Get list of PRs to check on this run
+# i.e. recent ones whose CI jobs have completed and which have indicated a
+# failure status
+
+PRTMP="$(mktemp)"
+tcanalyzepr $VERBOSITY --authfile "$XDG_DATA_HOME/auth/ghatoken" --ci-status --ready-prs --only-failed-prs 2>&1 > "$PRTMP" | $LOGCMDID tcanalyzepr
+PRS="$(cat "$PRTMP")"
+rm -f "$PRTMP"
+if [[ -z "$PRS" ]]; then
+    $LOGCMDNOLVL echo 'Error: no PRs are ready to check; terminating run'
+    exit
+fi
+$LOGCMDNOLVL echo Checking these PRs: "$PRS"
+
+###########
+# Read test logs for all configured CI services
+
+$LOGCMD tcanalyzepr $VERBOSITY --gather-analysis --origin=appveyor --account curlorg --pr $PRS
+$LOGCMD tcanalyzepr $VERBOSITY --gather-analysis --origin=azure --account daniel0244 --pr $PRS
+$LOGCMD tcanalyzepr $VERBOSITY --gather-analysis --origin=circle --pr $PRS
+$LOGCMD tcanalyzepr $VERBOSITY --gather-analysis --origin=cirrus --pr $PRS
+$LOGCMD tcanalyzepr $VERBOSITY --gather-analysis --origin=gha --authfile "$XDG_DATA_HOME/auth/ghatoken" --pr $PRS
+
+###########
+# Comment on any PRs that deserve a comment
+# TODO: remove --dry-run
+
+$LOGCMD tcanalyzepr $VERBOSITY --dry-run --comment --authfile "$XDG_DATA_HOME/auth/ghatoken" --pr $PRS

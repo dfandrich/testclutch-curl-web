@@ -11,6 +11,8 @@ cat >> "$1" <<EOF
 # TESTCLUTCH START
 # Periodic ingest job
 10 */8 * * * /var/www/webroot/ROOT/application/bin/incremental-update-job
+# Periodic PR comment job
+40 7,15,23 * * * /var/www/webroot/ROOT/application/bin/comment-pr
 # Daily cache clean job
 55 23 * * * systemd-cat /var/www/webroot/ROOT/application/bin/clean-cache-job
 # Blank line at end (because we're asked to)

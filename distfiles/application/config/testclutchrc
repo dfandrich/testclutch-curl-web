@@ -15,3 +15,9 @@ flaky_builds_max = 300
 
 # Time in hours that maks a job "disabled"
 disabled_job_hours = 24 * 6  # 6 days
+#
+# Which origins need to be checked before commenting on a PR
+pr_comment_origins = frozenset(('appveyor', 'azure', 'circle', 'cirrus', 'gha'))
+
+# URL to use for Test Clutch in PR comments
+pr_comment_url = 'https://testclutch.curl.se/'
