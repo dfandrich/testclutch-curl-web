@@ -9,7 +9,7 @@ project to a host running Virtuozzo Application Platform cloud service.
 The latest source can be obtained from
 https://github.com/dfandrich/testclutch-curl-web/
 
-The build scripts require Python 3 (ver. 3.8 or higher) with the `pip` package,
+The build scripts require Python 3 (ver. 3.9 or higher) with the `pip` package,
 as well as `git` and `xz`.
 
 Run `./builddeployment` to create `testclutch_deploy.tar.xz`, a deployment
@@ -35,8 +35,9 @@ environment from scratch by following these steps:
 0. Choose *NEW ENVIRONMENT*
 0. At the top of the environment topology diagram, click *SSL* and *enable wildcard SSL*
 0. in the *Application* block, choose *Apache Python*
-    - tested version: Apache 2.4.59
+    - tested version: Apache 2.4.62
     - tested version: Python 3.11.9
+    - tested version: Almalinux 9
 0. Under *Application Servers*:
     - 1 reserved cloudlet, 1 scaling limit, 1 horizontal scaling
     - horizontal scaling: stateless

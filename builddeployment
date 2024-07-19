@@ -1,6 +1,6 @@
 #!/bin/bash
 # Build a Test Clutch install bundle for deploying on Virtuozzo
-# This assume the availability of GNU shell tools.
+# This assumes the availability of GNU shell tools.
 set -e
 shopt -s extglob  # needed for git scheme check
 
@@ -56,7 +56,7 @@ fi
 # 2) the compiled versions in __pycache__ are only used if the .py file also
 #    exists.
 # The first issue can only be overcome by ensuring the right major/minor
-# version of python is available when this script is run (done by the check
+# version of Python is available when this script is run (done by the check
 # above).  The second issue can be overcome by moving the files from
 # __pycache__ to the parent directory then each renamed (to FOO.pyc) (pip
 # doesn't seem to offer an option to avoid __pycache__ and name mangling, but
