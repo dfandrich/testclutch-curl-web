@@ -14,6 +14,8 @@ readonly LOGCMDID='systemd-cat --level-prefix=true --priority=warning --identifi
 #readonly VERBOSITY=--debug --level-prefix
 readonly VERBOSITY="--verbose --level-prefix"
 
+$LOGCMDNOLVL echo Starting PR analysis
+
 ###########
 # Get list of PRs to check on this run
 # i.e. recent ones whose CI jobs have completed and which have indicated a
@@ -43,3 +45,5 @@ $LOGCMD tcanalyzepr $VERBOSITY --gather-analysis --origin=gha --authfile "$XDG_D
 # TODO: remove --dry-run
 
 $LOGCMD tcanalyzepr $VERBOSITY --dry-run --comment --authfile "$XDG_DATA_HOME/auth/ghatoken" --pr $PRS
+
+$LOGCMDNOLVL echo Completed PR analysis
