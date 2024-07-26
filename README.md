@@ -46,7 +46,7 @@ environment from scratch by following these steps:
     - Public IPv4: OFF
     - Environment Name: &lt;unique hostname>
 0. In the *Storage Containers* block, choose *Shared Storage*
-    - tested version: NFS 2.0-9.6
+    - tested version: NFS 2.0-10.5-almalinux-9
     - 1 reserved cloudlet, 1 scaling limit, 1 horizontal scaling
     - horizontal scaling: stateless
     - auto-clustering: OFF
