@@ -40,7 +40,7 @@ if [[ -e "$LOCKFILE" ]]; then
     $LOGCMDNOLVL echo -n Lock created:
     $LOGCMDNOLVL ls -l "$LOCKFILE"
     if ps -p "$(cat "$LOCKFILE")" > /dev/null; then
-        $LOGCMDNOLVL echo "Aborting daily update"
+        $LOGCMDNOLVL echo "Aborted daily update"
         exit 1
     fi
     $LOGCMDNOLVL echo Deleting stale lock
