@@ -29,6 +29,9 @@ readonly DRY=
 # Directory holding public summary reports
 readonly REPORTROOT="$HOME/ROOT/static/reports"
 
+# First commit in DB
+readoonly FIRST_COMMIT=ff67da58c4add27b05d237533d1cb39fb3894113
+
 $LOGCMDNOLVL echo Starting daily update
 
 # Look for an old job still running.
@@ -62,6 +65,21 @@ else
     $LOGCMDNOLVL echo Skipping GHA ingestion due to no available token
 fi
 
+# Update the git checkout
+# git 1.8.3 doesn't support -C to select the repository to use
+$LOGCMDNOLVL env GIT_DIR="$XDG_DATA_HOME/curl.git" git fetch origin master:master
+# Since this is done entirely locally, always ingest a lot more than we need to to reduce
+# the chance of a commit being missed.
+readonly GITHOURS=$((HOURS * 50))
+$LOGCMD tcgitcommitinfo $VERBOSITY $DRY "$XDG_DATA_HOME/curl.git" "$GITHOURS hours ago"
+# If this shows an error, use commitchainrev to start at the given commit and use the last
+# "commit" in the list as the last parameter in this command:
+if ! $LOGCMDNOLVL tcdbutil checkcommitchain https://github.com/curl/curl master "$FIRST_COMMIT"; then
+    tcdbutil commitchainrev https://github.com/curl/curl master | tail -8 | $LOGCMDID tcdbutil
+fi
+
+$LOGCMD tcaugmentgithash $VERBOSITY $DRY
+
 # The following must be done at least once a day, regardless of $HOURS
 # The Time zone used should ensure that that the daily build has been created for the day already
 readonly CURLFILE=$(curl -LsSf --max-time 999 --compressed https://curl.se/snapshots/ | sed -n -Ee '/NEWEST tar.xz/s/^.*(curl-[-.[:alnum:]]+\.tar\.xz).*$/\1/p')
@@ -93,21 +111,6 @@ readonly YESTERDAY="$(TZ=UTC+1 date -d yesterday +'%Y%m%d')"
 if ls "$XDG_CACHE_HOME/curldaily/"*-"$YESTERDAY"* >/dev/null 2>&1; then
     $LOGCMD tcaugmentcurldaily $VERBOSITY $DRY "$XDG_CACHE_HOME/curldaily/"*-"$YESTERDAY"*
 fi
-
-# Update the git checkout
-# git 1.8.3 doesn't support -C to select the repository to use
-$LOGCMDNOLVL env GIT_DIR="$XDG_DATA_HOME/curl.git" git fetch origin master:master
-# Since this is done entirely locally, always ingest a lot more than we need to to reduce
-# the chance of a commit being missed.
-readonly GITHOURS=$((HOURS * 50))
-$LOGCMD tcgitcommitinfo $VERBOSITY $DRY "$XDG_DATA_HOME/curl.git" "$GITHOURS hours ago"
-# If this shows an error, use commitchainrev to start at the given commit and use the last
-# "commit" in the list as the last parameter in this command:
-if ! $LOGCMDNOLVL tcdbutil checkcommitchain https://github.com/curl/curl master ff67da58c4add27b05d237533d1cb39fb3894113; then
-    tcdbutil commitchainrev https://github.com/curl/curl master | tail -8 | $LOGCMDID tcdbutil
-fi
-
-$LOGCMD tcaugmentgithash $VERBOSITY $DRY
 
 # Generate reports
 
