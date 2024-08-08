@@ -112,23 +112,31 @@ if ls "$XDG_CACHE_HOME/curldaily/"*-"$YESTERDAY"* >/dev/null 2>&1; then
     $LOGCMD tcaugmentcurldaily $VERBOSITY $DRY "$XDG_CACHE_HOME/curldaily/"*-"$YESTERDAY"*
 fi
 
-# Generate reports
+if [[ "$1" == "--no-reports" ]]; then
 
-REPORTTMP="$(mktemp "$REPORTROOT/tmp.XXXXXXXXXX")"
-tcmetadatastats $VERBOSITY --html --report=metadata_values 2>&1 > "$REPORTTMP" | $LOGCMDID tcmetadatastats
-mv "$REPORTTMP" "$REPORTROOT"/metadata-summary.html
+    $LOGCMDNOLVL echo Skipping report generation
 
-REPORTTMP="$(mktemp "$REPORTROOT/tmp.XXXXXXXXXX")"
-tcmetadatastats $VERBOSITY --html --report=test_run_stats --howrecent="$REDUCEDSTATSHOURS" 2>&1 > "$REPORTTMP" | $LOGCMDID tcmetadatastats
-mv "$REPORTTMP" "$REPORTROOT"/test-stats.html
+else
+    # Generate reports
+    $LOGCMDNOLVL echo Starting report generation
 
-REPORTTMP="$(mktemp "$REPORTROOT/tmp.XXXXXXXXXX")"
-tcmetadatastats $VERBOSITY --html --report=test_results_count --howrecent="$REDUCEDSTATSHOURS" 2>&1 > "$REPORTTMP" | $LOGCMDID tcmetadatastats
-mv "$REPORTTMP" "$REPORTROOT"/results-count.html
+    REPORTTMP="$(mktemp "$REPORTROOT/tmp.XXXXXXXXXX")"
+    tcmetadatastats $VERBOSITY --html --report=metadata_values 2>&1 > "$REPORTTMP" | $LOGCMDID tcmetadatastats
+    mv "$REPORTTMP" "$REPORTROOT"/metadata-summary.html
 
-REPORTTMP="$(mktemp "$REPORTROOT/tmp.XXXXXXXXXX")"
-tcanalysissum $VERBOSITY --html 2>&1 > "$REPORTTMP" | $LOGCMDID tcanalysissum
-mv "$REPORTTMP" "$REPORTROOT"/summary.html
+    REPORTTMP="$(mktemp "$REPORTROOT/tmp.XXXXXXXXXX")"
+    tcmetadatastats $VERBOSITY --html --report=test_run_stats --howrecent="$REDUCEDSTATSHOURS" 2>&1 > "$REPORTTMP" | $LOGCMDID tcmetadatastats
+    mv "$REPORTTMP" "$REPORTROOT"/test-stats.html
+
+    REPORTTMP="$(mktemp "$REPORTROOT/tmp.XXXXXXXXXX")"
+    tcmetadatastats $VERBOSITY --html --report=test_results_count --howrecent="$REDUCEDSTATSHOURS" 2>&1 > "$REPORTTMP" | $LOGCMDID tcmetadatastats
+    mv "$REPORTTMP" "$REPORTROOT"/results-count.html
+
+    REPORTTMP="$(mktemp "$REPORTROOT/tmp.XXXXXXXXXX")"
+    tcanalysissum $VERBOSITY --html 2>&1 > "$REPORTTMP" | $LOGCMDID tcanalysissum
+    mv "$REPORTTMP" "$REPORTROOT"/summary.html
+
+fi
 
 # Delete run lock file at end
 rm -f "$LOCKFILE"
