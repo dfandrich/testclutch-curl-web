@@ -30,7 +30,7 @@ readonly DRY=
 readonly REPORTROOT="$HOME/ROOT/static/reports"
 
 # First commit in DB
-readoonly FIRST_COMMIT=ff67da58c4add27b05d237533d1cb39fb3894113
+readonly FIRST_COMMIT=ff67da58c4add27b05d237533d1cb39fb3894113
 
 $LOGCMDNOLVL echo Starting daily update
 
