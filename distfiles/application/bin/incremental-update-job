@@ -5,7 +5,7 @@
 # Number of hours of logs to bring in on every run
 # This must be larger than the time between cron runs to avoid missing logs,
 # and ideally more than the time between two runs in case one is skipped.
-readonly HOURS=18
+readonly HOURS=26
 
 # Number of hours for statistics jobs that take too much memory to run for
 # the full 90 days

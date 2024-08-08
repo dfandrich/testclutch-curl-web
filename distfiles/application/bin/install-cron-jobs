@@ -9,12 +9,14 @@ sed -i -e '/^# TESTCLUTCH START/,/^# TESTCLUTCH END/d' -e '${/^$/d}' "$1"
 # Add an extra blank link at the end because the comment in crontab -l asks for one
 cat >> "$1" <<EOF
 # TESTCLUTCH START
-# Periodic ingest job
-10 */8 * * * /var/www/webroot/ROOT/application/bin/incremental-update-job
+# Periodic ingest + report job
+10 0,12 * * * /var/www/webroot/ROOT/application/bin/incremental-update-job
+# Periodic ingest only job
+5 9,11,21,23 * * * /var/www/webroot/ROOT/application/bin/incremental-update-job --no-reports
 # Periodic PR comment job
-40 7,15,23 * * * /var/www/webroot/ROOT/application/bin/comment-pr
+40 9,11,21,23 * * * /var/www/webroot/ROOT/application/bin/comment-pr
 # Daily cache clean job
-55 23 * * * systemd-cat /var/www/webroot/ROOT/application/bin/clean-cache-job
+8 0 * * * systemd-cat /var/www/webroot/ROOT/application/bin/clean-cache-job
 # Blank line at end (because we're asked to)
 # TESTCLUTCH END
 
