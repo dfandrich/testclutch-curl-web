@@ -21,3 +21,16 @@ pr_comment_origins = frozenset(('appveyor', 'azure', 'circle', 'cirrus', 'gha'))
 
 # URL to use for Test Clutch in PR comments
 pr_comment_url = 'https://testclutch.curl.se/'
+
+# Metadata fields over which to create the features matrix
+matrix_meta_fields = ['arch', 'buildsystem', 'compiler', 'os', 'testformat', 'testmode',
+                      'withvalgrind']
+
+# Transformations to perform on the metadata fields in matrix_meta_fields
+# The format is {'fieldname': [('pattern1', 'replacement2'), ('pattern2', 'replacement2'), ...]
+# where the pattern and replacement strings are as specified for re.sub(). They are executed in
+# the order given for each fieldname.
+matrix_meta_transforms = {
+    'arch': [('^arm64$', 'aarch64'), ('^amd64$', 'x86_64')],
+    'compiler': [('GNU', 'gcc')],
+}

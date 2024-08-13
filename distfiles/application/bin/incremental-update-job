@@ -133,6 +133,10 @@ else
     mv "$REPORTTMP" "$REPORTROOT"/results-count.html
 
     REPORTTMP="$(mktemp "$REPORTROOT/tmp.XXXXXXXXXX")"
+    tcmetadatastats $VERBOSITY --html --report=feature_matrix 2>&1 > "$REPORTTMP" | $LOGCMDID tcmetadatastats
+    mv "$REPORTTMP" "$REPORTROOT"/feature-matrix.html
+
+    REPORTTMP="$(mktemp "$REPORTROOT/tmp.XXXXXXXXXX")"
     tcanalysissum $VERBOSITY --html 2>&1 > "$REPORTTMP" | $LOGCMDID tcanalysissum
     mv "$REPORTTMP" "$REPORTROOT"/summary.html
 
