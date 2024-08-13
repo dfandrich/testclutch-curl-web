@@ -28,9 +28,16 @@ jobs:
       - uses: actions/checkout@v4
       - name: 'install deps'
         run: >
-            sudo apt-get update -y
-            && sudo apt-get install -y --no-install-suggests --no-install-recommends
-            python3-pip git xz-utils
+            sudo apt-get update -y &&
+            sudo apt-get install -y --no-install-suggests --no-install-recommends python3-pip git
+            xz-utils flake8 python3-flake8-builtins python3-flake8-comprehensions
+            python3-flake8-deprecated python3-flake8-import-order python3-flake8-mutable
+      - name: 'lint'
+        # TODO: add pytype once it supports Python 3.12
+        run: |
+            flake8 --max-line-length=100 distfiles/*.py
+            shellcheck --shell=bash -e SC1091 builddeployment distfiles/application/bin/{install-cron-jobs,clean-cache-job,post-deploy,setup-vars}
+            shellcheck -e SC1091,SC2086,SC2155 distfiles/application/bin/{comment-pr,incremental-update-job}
       - name: 'build'
         run: ./builddeployment "$GITBRANCH" "$GITREPO"
       - uses: actions/upload-artifact@v4
