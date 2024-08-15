@@ -12,9 +12,9 @@ cat >> "$1" <<EOF
 # Periodic ingest + report job
 10 0,6,12,18 * * * /var/www/webroot/ROOT/application/bin/incremental-update-job
 # Periodic ingest only job
-5 5,11,17,23 * * * /var/www/webroot/ROOT/application/bin/incremental-update-job --no-reports
+#5 5,11,17,23 * * * /var/www/webroot/ROOT/application/bin/incremental-update-job --no-reports
 # Periodic PR comment job
-40 4,5,10,11,16,17,22,23 * * * /var/www/webroot/ROOT/application/bin/comment-pr
+40 3,4,5,9,10,11,15,16,17,21,22,23 * * * /var/www/webroot/ROOT/application/bin/comment-pr
 # Daily cache clean job
 8 0 * * * systemd-cat /var/www/webroot/ROOT/application/bin/clean-cache-job
 # Blank line at end (because we're asked to)
