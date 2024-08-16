@@ -97,7 +97,7 @@ fi
 
 # The following must be done at least once a day (well, once every two days due to the next section)
 if [[ -f "$CURLDAILYPATH" ]]; then
-    $LOGCMD tcaugmentcurldaily $VERBOSITY $DRY "$CURLDAILYPATH"
+    $LOGCMD tcaugmentcurldaily $VERBOSITY $DRY --howrecent $((3 * 24)) "$CURLDAILYPATH"
 else
     $LOGCMDNOLVL echo "Daily curl build file $CURLFILE could not be downloaded!"
 fi
@@ -109,7 +109,7 @@ fi
 # as the daily file we just checked above.
 readonly YESTERDAY="$(TZ=UTC+1 date -d yesterday +'%Y%m%d')"
 if ls "$XDG_CACHE_HOME/curldaily/"*-"$YESTERDAY"* >/dev/null 2>&1; then
-    $LOGCMD tcaugmentcurldaily $VERBOSITY $DRY "$XDG_CACHE_HOME/curldaily/"*-"$YESTERDAY"*
+    $LOGCMD tcaugmentcurldaily $VERBOSITY $DRY --howrecent $((4 * 24)) "$XDG_CACHE_HOME/curldaily/"*-"$YESTERDAY"*
 fi
 
 if [[ "$1" == "--no-reports" ]]; then
