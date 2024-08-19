@@ -31,14 +31,24 @@ pr_comment_url = 'https://testclutch.curl.se/'
 
 # Metadata fields over which to create the features matrix
 matrix_meta_fields = ['arch', 'targetarch', 'os', 'buildsystem', 'compiler', 'testformat',
-                      'testmode', 'withvalgrind']
+                      'testmode', 'withvalgrind', 'curldeps']
+
+# Metadata fields to split into subfields using a regular expression
+# The format is {'fieldname': r'<regex>', ...}  where <regex> is passed to re.split to split a text
+# string into multiple values, each of which is treated like a separate feature value.
+matrix_meta_splits = {
+    'curldeps': r'(?:/[^ ]+(?: |$))|(?: )'
+}
 
 # Transformations to perform on the metadata fields in matrix_meta_fields
 # The format is {'fieldname': [('pattern1', 'replacement2'), ('pattern2', 'replacement2'), ...]
 # where the pattern and replacement strings are as specified for re.sub(). They are executed in
-# the order given for each fieldname.
+# the order given for each fieldname and on each value resulting from matrix_meta_splits.
 matrix_meta_transforms = {
-    'arch': [('^arm64$', 'aarch64'), ('^amd64$', 'x86_64')],
-    'compiler': [('GNU', 'gcc')],
-    'targetarch': [('^amd64$', 'x86_64')],
+    'arch': [('^arm64$', 'aarch64'), (r'^amd64$', 'x86_64')],
+    'compiler': [(r'^GNU$', 'gcc')],
+    'curldeps': [(r'\(', ''), (r'^libcurl$', '')],  # parenthesized dependencies & useless libcurl
+    'targetarch': [(r'^amd64$', 'x86_64')],
+    'withvalgrind': [(r'^no$', '')],  # leave only 'yes'
+    'testmode': [(r'^normal$', '')],  # leave only 'torture'
 }
