@@ -26,24 +26,25 @@ tcanalyzepr $VERBOSITY --authfile "$XDG_DATA_HOME/auth/ghatoken" --ci-status --r
 PRS="$(cat "$PRTMP")"
 rm -f "$PRTMP"
 if [[ -z "$PRS" ]]; then
-    $LOGCMDNOLVL echo 'Error: no PRs are ready to check; terminating run'
-    exit
+    $LOGCMDNOLVL echo 'No PRs are ready to check'
+
+else
+    $LOGCMDNOLVL echo Checking these PRs: "$PRS"
+
+    ###########
+    # Read test logs for all configured CI services
+
+    $LOGCMD tcanalyzepr $VERBOSITY --gather-analysis --origin=appveyor --account curlorg --pr $PRS
+    $LOGCMD tcanalyzepr $VERBOSITY --gather-analysis --origin=azure --account daniel0244 --pr $PRS
+    $LOGCMD tcanalyzepr $VERBOSITY --gather-analysis --origin=circle --pr $PRS
+    $LOGCMD tcanalyzepr $VERBOSITY --gather-analysis --origin=cirrus --pr $PRS
+    $LOGCMD tcanalyzepr $VERBOSITY --gather-analysis --origin=gha --authfile "$XDG_DATA_HOME/auth/ghatoken" --pr $PRS
+
+    ###########
+    # Comment on any PRs that deserve a comment
+    # TODO: remove --dry-run
+
+    $LOGCMD tcanalyzepr $VERBOSITY --dry-run --comment --authfile "$XDG_DATA_HOME/auth/ghatoken" --pr $PRS
 fi
-$LOGCMDNOLVL echo Checking these PRs: "$PRS"
-
-###########
-# Read test logs for all configured CI services
-
-$LOGCMD tcanalyzepr $VERBOSITY --gather-analysis --origin=appveyor --account curlorg --pr $PRS
-$LOGCMD tcanalyzepr $VERBOSITY --gather-analysis --origin=azure --account daniel0244 --pr $PRS
-$LOGCMD tcanalyzepr $VERBOSITY --gather-analysis --origin=circle --pr $PRS
-$LOGCMD tcanalyzepr $VERBOSITY --gather-analysis --origin=cirrus --pr $PRS
-$LOGCMD tcanalyzepr $VERBOSITY --gather-analysis --origin=gha --authfile "$XDG_DATA_HOME/auth/ghatoken" --pr $PRS
-
-###########
-# Comment on any PRs that deserve a comment
-# TODO: remove --dry-run
-
-$LOGCMD tcanalyzepr $VERBOSITY --dry-run --comment --authfile "$XDG_DATA_HOME/auth/ghatoken" --pr $PRS
 
 $LOGCMDNOLVL echo Completed PR analysis
