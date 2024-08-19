@@ -33,4 +33,5 @@ matrix_meta_fields = ['arch', 'targetarch', 'os', 'buildsystem', 'compiler', 'te
 matrix_meta_transforms = {
     'arch': [('^arm64$', 'aarch64'), ('^amd64$', 'x86_64')],
     'compiler': [('GNU', 'gcc')],
+    'targetarch': [('^amd64$', 'x86_64')],
 }
