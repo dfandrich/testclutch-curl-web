@@ -42,9 +42,8 @@ else
 
     ###########
     # Comment on any PRs that deserve a comment
-    # TODO: remove --dry-run
 
-    $LOGCMD tcanalyzepr $VERBOSITY --dry-run --comment --authfile "$XDG_DATA_HOME/auth/ghatoken" --pr $PRS
+    $LOGCMD tcanalyzepr $VERBOSITY --comment --authfile "$XDG_DATA_HOME/auth/ghatoken" --pr $PRS
 fi
 
 $LOGCMDNOLVL echo Completed PR analysis
