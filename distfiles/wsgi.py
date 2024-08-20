@@ -77,7 +77,8 @@ def safe_path(path: str) -> bool:
     """
     parts = path.split('/', 2)
     return (parts[0] == ''
-            and parts[1] in frozenset(('index.html', 'images', 'static', 'robots.txt'))
+            and parts[1] in frozenset(
+                ('index.html', 'images', 'static', 'robots.txt', 'version.txt'))
             and path.count('.') <= 1 and path.count('/') <= 2 and SAFE_PATH.match(path) is not None
             and os.path.isfile(get_static_path(path)))
 

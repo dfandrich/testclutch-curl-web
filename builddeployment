@@ -79,6 +79,10 @@ rm -rf build/application/python/*.dist-info
 # Add static files to the install bundle
 cp -r --preserve=timestamps distfiles/. build
 
+# Store the highest-valued tag on HEAD to identify this release
+# If there is no tag, the file will be empty.
+git tag --points-at HEAD | sort -V | tail -1 > build/version.txt
+
 # Build bundle from staging area
 tar -C build --xz -cf testclutch_deploy.tar.xz .
 rm -rf build
