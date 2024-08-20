@@ -81,7 +81,8 @@ cp -r --preserve=timestamps distfiles/. build
 
 # Store the highest-valued tag on HEAD to identify this release
 # If there is no tag, the file will be empty.
-git tag --points-at HEAD | sort -V | tail -1 > build/version.txt
+git tag --points-at HEAD | sort -V | tail -1 > testclutch_deploy-tag.txt
+cp -p testclutch_deploy-tag.txt build/version.txt
 
 # Build bundle from staging area
 tar -C build --xz -cf testclutch_deploy.tar.xz .
