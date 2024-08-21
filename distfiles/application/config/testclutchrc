@@ -24,7 +24,7 @@ pr_ready_logins = frozenset((
     'MarcelRaad', 'mkauf'))
 
 # Which origins need to be checked before commenting on a PR
-pr_comment_origins = frozenset(('appveyor', 'azure', 'circle', 'cirrus', 'gha'))
+pr_comment_origins = frozenset(('appveyor', 'azure', 'circle', 'gha'))
 
 # URL to use for Test Clutch in PR comments
 pr_comment_url = 'https://testclutch.curl.se/'
