@@ -33,6 +33,7 @@ readonly REPORTROOT="$HOME/ROOT/static/reports"
 readonly FIRST_COMMIT=ff67da58c4add27b05d237533d1cb39fb3894113
 
 $LOGCMDNOLVL echo Starting daily update
+$LOGCMDNOLVL echo "version $(cat "$HOME/ROOT/version.txt")"
 
 # Look for an old job still running.
 # It's really slow if it is, but give it a chance to finish.

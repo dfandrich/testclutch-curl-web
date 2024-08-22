@@ -15,6 +15,7 @@ readonly LOGCMDID='systemd-cat --level-prefix=true --priority=warning --identifi
 readonly VERBOSITY="--verbose --level-prefix"
 
 $LOGCMDNOLVL echo Starting PR analysis
+$LOGCMDNOLVL echo "version $(cat "$HOME/ROOT/version.txt")"
 
 ###########
 # Get list of PRs to check on this run
