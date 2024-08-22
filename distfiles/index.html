@@ -2,6 +2,34 @@
 <html><head>
   <title>Test Clutch for curl</title>
   <link rel="icon" type="image/png" href="images/test-clutch-logo.svg">
+  <style type="text/css">
+    summary {
+        margin-top: 0em;
+        padding-bottom: 0.3em;
+        margin-left: -1em;
+        background-color: white;
+    }
+    details {
+        margin-left: 2em;
+        background-color: whitesmoke;
+    }
+    .version {
+        font-family: monospace;
+        transform: scale(0.85);
+        transform-origin: top left;
+    }
+    .versiontitle {
+        vertical-align: top;
+        position: relative;
+        top: 1.02em;
+    }
+    iframe {
+        border: none;
+        overflow: hidden;
+        height: 4em;  /* tall enough to hide scroll bars in Chrome */
+        width: 10em;
+    }
+  </style>
 </head><body>
 
 <img src="images/test-clutch-logo.svg" alt="Test Clutch" style="vertical-align: -30%;">
@@ -56,7 +84,9 @@ This report shows many statistics about recent test runs.
 This report shows which characteristics or features that each job tests. It is
 presented as a matrix of job names on the Y axis and feature names on the X
 axis. It is not possible to detect some features in some jobs, so these show as
-question marks.
+question marks. This sometimes happens even if the feature data <em>should
+be</em> available, but it's not in the test running step of the CI job, and
+Test Clutch looks at each test step independently.
 </details>
 <br>
 
@@ -100,7 +130,12 @@ test results.
 
 <hr>
 <a href="https://curl.se/">cURL home page</a>
-<p>
+<br>
 <a href="https://github.com/dfandrich/testclutch/">Test Clutch development page</a>
+<br>
+<div class="version">
+<span class="versiontitle">version</span>
+<iframe src="version.txt"></iframe>
+</div>
 
 </body></html>
