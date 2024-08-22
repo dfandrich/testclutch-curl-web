@@ -47,7 +47,7 @@ matrix_meta_splits = {
 # the order given for each fieldname and on each value resulting from matrix_meta_splits.
 matrix_meta_transforms = {
     'arch': [('^arm64$', 'aarch64'), (r'^amd64$', 'x86_64')],
-    'compiler': [(r'^GNU$', 'gcc')],
+    'compiler': [(r'^GNU$', 'gcc'), (r'^Clang$', 'clang')],
     'curldeps': [(r'\(', ''), (r'^libcurl$', '')],  # parenthesized dependencies & useless libcurl
     'dailybuild': [(r'^\d+$', 'yes')],
     'targetarch': [(r'^amd64$', 'x86_64')],
