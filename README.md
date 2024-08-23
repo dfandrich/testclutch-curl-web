@@ -55,8 +55,8 @@ environment from scratch by following these steps:
 0. In *Application Servers*, *Settings→Volumes*
     - Choose Add, Data Container, Shared Storage node, click checkbox for
       `/data /data`, then *Add*, *Apply*
-0. In *Application Servers*, *Settings→Load Alerts*
-    - Change the *auto_alert_cpu* threshold to 80%.
+0. In *<your environment>*, *Settings→Load Alerts*
+    - Change the *auto_alert_cpu* threshold to 90%.
 
 # Deployment
 
