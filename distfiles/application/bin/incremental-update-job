@@ -80,7 +80,6 @@ fi
 $LOGCMD tcaugmentgithash $VERBOSITY $DRY
 
 # The following must be done at least once a day, regardless of $HOURS
-# The Time zone used should ensure that that the daily build has been created for the day already
 readonly CURLFILE=$(curl -LsSf --max-time 999 --compressed https://curl.se/snapshots/ | sed -n -Ee '/NEWEST tar.xz/s/^.*(curl-[-.[:alnum:]]+\.tar\.xz).*$/\1/p')
 readonly CURLDAILYPATH="$XDG_CACHE_HOME/curldaily/$CURLFILE"
 if [[ -z "$CURLFILE" ]]; then
