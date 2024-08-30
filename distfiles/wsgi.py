@@ -50,8 +50,7 @@ def get_static_headers(fn: str) -> List[Tuple[str, str]]:
         response_headers.append(('Content-Type', f'{mime}; charset={CHARSET}'))
 
     stat = os.stat(get_static_path(fn))
-    mtime = stat.st_mtime
-    mtimestr = datetime.datetime.fromtimestamp(mtime).strftime(
+    mtimestr = datetime.datetime.fromtimestamp(stat.st_mtime).strftime(
             '%a, %d %b %Y %H:%M:%S GMT')
     response_headers.append(('Last-Modified', mtimestr))
 
@@ -61,8 +60,8 @@ def get_static_headers(fn: str) -> List[Tuple[str, str]]:
 
     # Create an ETag based on size, mtime and inode number
     tagval = struct.pack('>qqq', stat.st_size, int(stat.st_mtime), stat.st_ino)
-    tagval = tagval.lstrip(b'\0')  # These left-justified zeros from the size add only bulk
-    response_headers.append(('ETag', '"' + base64.b85encode(tagval).decode('US-ASCII') + '"'))
+    tagshort = tagval.lstrip(b'\0')  # These left-justified zeros from the size add only bulk
+    response_headers.append(('ETag', '"' + base64.b85encode(tagshort).decode('US-ASCII') + '"'))
     return response_headers
 
 
