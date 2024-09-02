@@ -22,9 +22,10 @@ branch or tag and git repository location (local or remote), respectively.
 The exact Python dependency versions to use are found in the file
 requirements-testclutch.txt.
 
-The script writes the files `testclutch_deploy-commit.txt` and
-`testclutch_deploy-requirements.txt` which contain the commit ID of the
-testclutch source and the Python modules and their versions used, respectively.
+The script writes the files `testclutch_deploy-commit.txt`,
+`testclutch_deploy-requirements.txt` and `testclutch_deploy-tag.txt` which
+contain the commit ID of the testclutch source, the Python modules and their
+versions used, and the latest tag in the git repository, respectively.
 
 # Environment Setup
 
