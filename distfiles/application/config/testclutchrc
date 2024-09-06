@@ -21,7 +21,7 @@ disabled_job_hours = 24 * 6  # 6 days
 pr_ready_logins = frozenset((
     'bagder', 'dfandrich', 'danielgustafsson', 'jay', 'icing', 'mback2k', 'samueloph', 'nickzman',
     'zagor', 'tatsuhiro-t', 'xquery', 'gvanem', 'vszakats', 'cmeister2', 'jzakrzewski',
-    'MarcelRaad', 'mkauf'))
+    'MarcelRaad', 'mkauf', 'renovate[bot]'))
 
 # Which origins need to be checked before commenting on a PR
 pr_comment_origins = frozenset(('azure', 'circle', 'gha'))
