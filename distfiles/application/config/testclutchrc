@@ -46,11 +46,12 @@ matrix_meta_splits = {
 # where the pattern and replacement strings are as specified for re.sub(). They are executed in
 # the order given for each fieldname and on each value resulting from matrix_meta_splits.
 matrix_meta_transforms = {
-    'arch': [('^arm64$', 'aarch64'), (r'^amd64$', 'x86_64')],
-    'compiler': [(r'^GNU$', 'gcc'), (r'^Clang$', 'clang')],
+    'arch': [('(?i)^arm64$', 'aarch64'), (r'(?i)^amd64$', 'x86_64')],
+    'compiler': [(r'^(GNU|GNU_C)$', 'gcc'), (r'(?i)^clang$', 'clang'),
+                 (r'^INTEL_UNIX_C$', 'IntelC'), (r'^TINY_C$', 'TinyC')],
     'curldeps': [(r'\(', ''), (r'^libcurl$', '')],  # parenthesized dependencies & useless libcurl
     'dailybuild': [(r'^\d+$', 'yes')],
-    'targetarch': [(r'^amd64$', 'x86_64')],
+    'targetarch': [('(?i)^arm64$', 'aarch64'), (r'(?i)^amd64$', 'x86_64')],
     'withevent': [(r'^no$', '')],     # leave only 'yes'
     'withvalgrind': [(r'^no$', '')],  # leave only 'yes'
     'testmode': [(r'^normal$', '')],  # leave only 'torture'
