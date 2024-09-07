@@ -48,7 +48,8 @@ matrix_meta_splits = {
 matrix_meta_transforms = {
     'arch': [('(?i)^arm64$', 'aarch64'), (r'(?i)^amd64$', 'x86_64')],
     'compiler': [(r'^(GNU|GNU_C)$', 'gcc'), (r'(?i)^clang$', 'clang'),
-                 (r'^INTEL_UNIX_C$', 'IntelC'), (r'^TINY_C$', 'TinyC')],
+                 (r'^INTEL_UNIX_C$', 'IntelC'), (r'^TINY_C$', 'TinyC'),
+                 (r'(?i)^APPLECLANG$', 'AppleClang')],
     'curldeps': [(r'\(', ''), (r'^libcurl$', '')],  # parenthesized dependencies & useless libcurl
     'dailybuild': [(r'^\d+$', 'yes')],
     'targetarch': [('(?i)^arm64$', 'aarch64'), (r'(?i)^amd64$', 'x86_64')],
