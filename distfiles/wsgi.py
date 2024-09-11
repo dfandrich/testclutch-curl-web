@@ -18,7 +18,7 @@ EXPIRE_HOURS = 1
 
 
 def root_path():
-    "Return the directory containing this very module"
+    """Return the directory containing this very module"""
     return os.path.dirname(sys.modules[__name__].__file__)
 
 
@@ -101,8 +101,8 @@ def application(environ, start_response) -> List[bytes]:
 
 if __name__ == '__main__':
     from wsgiref.simple_server import make_server
-    with make_server("", 8000, application) as httpd:
-        print("Serving on port 8000...")
+    with make_server('', 8000, application) as httpd:
+        print('Serving on port 8000...')
 
         # Serve until process is killed
         httpd.serve_forever()
