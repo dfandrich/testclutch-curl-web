@@ -29,8 +29,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-          # This is buggy and causes an error. Since the triggering tag is already fetched
-          # and available, it's fine to leave this as the default false.
+          # This is buggy and causes an error when the triggering condition is a tag. Since the
+          # triggering tag is already fetched and available for reference, it's fine to leave this
+          # at the default false.
           # https://github.com/actions/checkout/issues/1467
           # fetch-tags: true
       - name: 'install deps'
