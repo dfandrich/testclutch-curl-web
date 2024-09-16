@@ -32,9 +32,9 @@ jobs:
         run: >
             sudo apt-get update -y &&
             sudo apt-get install -y --no-install-suggests --no-install-recommends
-              python3-pip git tidy xz-utils flake8 python3-flake8-builtins
-              python3-flake8-comprehensions python3-flake8-deprecated
-              python3-flake8-import-order python3-flake8-mutable python3-flake8-quotes &&
+            python3-pip git tidy xz-utils flake8 python3-flake8-builtins
+            python3-flake8-comprehensions python3-flake8-deprecated
+            python3-flake8-import-order python3-flake8-mutable python3-flake8-quotes &&
             python3 -m pip install --break-system-packages pytype
       - name: 'lint'
         run: |
