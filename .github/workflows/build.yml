@@ -5,7 +5,7 @@ permissions: {}
 
 on:
   # Trigger the workflow on push or pull requests, but only for the
-  # master and ci branches or when a tcc* tag is pushed
+  # master and ci branches
   push:
     branches:
       - master
@@ -13,8 +13,6 @@ on:
   pull_request:
     branches:
       - master
-  tags:
-    - tcc*
   workflow_dispatch:
 
 env:
