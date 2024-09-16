@@ -4,11 +4,10 @@ name: Build
 permissions: {}
 
 on:
-  # Trigger the workflow on push or pull requests, but only for the
-  # master and ci branches or when a tcc* tag is pushed
+  # Trigger the workflow on push or pull requests. For pushes, trigger for any push to the
+  # ci branch, but only those with a tcc* tag if pushed to the master (or other) branch.
   push:
     branches:
-      - master
       - ci
     tags:
       - tcc*
