@@ -29,7 +29,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-          fetch-tags: true
+          # This is buggy and done manually instead in the next step (below). See
+          # https://github.com/actions/checkout/issues/1467
+          # fetch-tags: true
+      - name: 'fetch tags'
+        run: git fetch --tags
       - name: 'install deps'
         run: >
             sudo apt-get update -y &&
