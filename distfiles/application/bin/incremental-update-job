@@ -55,7 +55,6 @@ fi
 echo $$ > "$LOCKFILE"
 
 # Download logs
-$LOGCMD tcingestlog $VERBOSITY $DRY --origin=azure --account daniel0244 --howrecent $HOURS
 $LOGCMD tcingestlog $VERBOSITY $DRY --origin=circle --howrecent $HOURS
 $LOGCMD tcingestlog $VERBOSITY $DRY --origin=curlauto --howrecent $HOURS
 if [[ -r "$XDG_DATA_HOME/auth/ghatoken" ]]; then

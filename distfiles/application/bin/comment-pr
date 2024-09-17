@@ -35,7 +35,6 @@ else
     ###########
     # Read test logs for all configured CI services
 
-    $LOGCMD tcanalyzepr $VERBOSITY --gather-analysis --origin=azure --account daniel0244 --pr $PRS
     $LOGCMD tcanalyzepr $VERBOSITY --gather-analysis --origin=circle --pr $PRS
     $LOGCMD tcanalyzepr $VERBOSITY --gather-analysis --origin=gha --authfile "$XDG_DATA_HOME/auth/ghatoken" --pr $PRS
 
