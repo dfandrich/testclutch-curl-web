@@ -31,13 +31,15 @@ pr_comment_url = 'https://testclutch.curl.se/'
 
 # Metadata fields over which to create the features matrix
 matrix_meta_fields = ['arch', 'targetarch', 'os', 'buildsystem', 'compiler', 'testformat',
-                      'testmode', 'withvalgrind', 'withevent', 'dailybuild', 'curldeps', 'features']
+                      'testmode', 'withvalgrind', 'withevent', 'dailybuild', 'curldeps', 'features',
+                      'curlprotocols']
 
 # Metadata fields to split into subfields using a regular expression
 # The format is {'fieldname': r'<regex>', ...}  where <regex> is passed to re.split to split a text
 # string into multiple values, each of which is treated like a separate feature value.
 matrix_meta_splits = {
     'curldeps': r'(?:/[^ ]+(?: |$))|(?: )',
+    'curlprotocols': r' ',
     'features': r' ',
 }
 
