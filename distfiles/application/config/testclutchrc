@@ -31,8 +31,8 @@ pr_comment_url = 'https://testclutch.curl.se/'
 
 # Metadata fields over which to create the features matrix
 matrix_meta_fields = ['arch', 'targetarch', 'os', 'buildsystem', 'compiler', 'testformat',
-                      'testmode', 'withvalgrind', 'withevent', 'dailybuild', 'curldeps', 'features',
-                      'curlprotocols']
+                      'testmode', 'withvalgrind', 'withevent', 'paralleljobs', 'dailybuild',
+                      'curldeps', 'features', 'curlprotocols']
 
 # Metadata fields to split into subfields using a regular expression
 # The format is {'fieldname': r'<regex>', ...}  where <regex> is passed to re.split to split a text
@@ -57,5 +57,6 @@ matrix_meta_transforms = {
     'targetarch': [('(?i)^arm64$', 'aarch64'), (r'(?i)^amd64$', 'x86_64')],
     'withevent': [(r'^no$', '')],     # leave only 'yes'
     'withvalgrind': [(r'^no$', '')],  # leave only 'yes'
+    'paralleljobs': [(r'^.+$', 'yes')],  # turn anything into 'yes'
     'testmode': [(r'^normal$', '')],  # leave only 'torture'
 }
