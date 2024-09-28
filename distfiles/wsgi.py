@@ -11,14 +11,13 @@ import os
 import re
 import struct
 import sys
-from typing import List, Tuple
 
 # Number of hours to use in the expires header
 EXPIRE_HOURS = 1
 
 
 def root_path():
-    """Return the directory containing this very module"""
+    """Return the directory containing this very module."""
     return os.path.dirname(sys.modules[__name__].__file__)
 
 
@@ -43,15 +42,15 @@ def get_static(fn: str) -> bytes:
     return output
 
 
-def get_static_headers(fn: str) -> List[Tuple[str, str]]:
+def get_static_headers(fn: str) -> list[tuple[str, str]]:
     response_headers = []
-    (mime, encoding) = mimetypes.guess_type(get_static_path(fn))
+    mime, encoding = mimetypes.guess_type(get_static_path(fn))
     if mime:
         response_headers.append(('Content-Type', f'{mime}; charset={CHARSET}'))
 
     stat = os.stat(get_static_path(fn))
-    mtimestr = datetime.datetime.fromtimestamp(stat.st_mtime).strftime(
-            '%a, %d %b %Y %H:%M:%S GMT')
+    mtimestr = datetime.datetime.fromtimestamp(
+        stat.st_mtime, tz=datetime.timezone.utc).strftime('%a, %d %b %Y %H:%M:%S GMT')
     response_headers.append(('Last-Modified', mtimestr))
 
     expstr = (datetime.datetime.now(tz=datetime.timezone.utc)
@@ -82,7 +81,7 @@ def safe_path(path: str) -> bool:
             and os.path.isfile(get_static_path(path)))
 
 
-def application(environ, start_response) -> List[bytes]:
+def application(environ, start_response) -> list[bytes]:
     path = environ['PATH_INFO']
     if path == '/':
         path = '/' + INDEX_PATH

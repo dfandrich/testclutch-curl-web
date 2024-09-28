@@ -39,12 +39,13 @@ jobs:
             sudo apt-get update -y &&
             sudo apt-get install -y --no-install-suggests --no-install-recommends
             python3-pip git tidy xz-utils flake8 python3-flake8-builtins
-            python3-flake8-comprehensions python3-flake8-deprecated
-            python3-flake8-import-order python3-flake8-mutable python3-flake8-quotes &&
+            python3-flake8-comprehensions python3-flake8-deprecated python3-flake8-docstrings
+            python3-flake8-import-order python3-flake8-mutable python3-flake8-noqa
+            python3-flake8-quotes &&
             python3 -m pip install --break-system-packages pytype
       - name: 'lint'
         run: |
-            flake8 --max-line-length=100 distfiles/*.py distfiles/application/config/testclutchrc
+            flake8 --max-line-length=100 --ignore=D100,D103,W503 distfiles/*.py distfiles/application/config/testclutchrc
             pytype distfiles/*.py
             tidy -qe distfiles/*.html
             shellcheck --shell=bash -e SC1091 builddeployment distfiles/application/bin/{install-cron-jobs,clean-cache-job,post-deploy,setup-vars}
