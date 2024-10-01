@@ -47,7 +47,6 @@ fi
 mkdir -p "$XDG_DATA_HOME"/reports
 mkdir -m 0700 "$XDG_DATA_HOME"/auth
 mkdir -p "$XDG_CACHE_HOME"
-mkdir -p "$XDG_CACHE_HOME"/curldaily
 
 # Seed the git checkout
 # git 1.8 doesn't support --filter=blob:none or --shallow-since='90 days ago'

@@ -5,4 +5,3 @@ readonly DAYS=7
 . "$(dirname "$0")"/setup-vars
 
 find "$HOME/ROOT/static/reports/" -xdev -depth -name 'tmp.*' -type f -mtime +"$DAYS" -delete
-find "$XDG_CACHE_HOME"/testclutchlogs "$XDG_CACHE_HOME"/curldaily -xdev -depth -type f -mtime +"$DAYS" -delete

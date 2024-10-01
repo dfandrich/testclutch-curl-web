@@ -76,38 +76,8 @@ if ! $LOGCMDNOLVL tcdbutil checkcommitchain https://github.com/curl/curl master 
     tcdbutil commitchainrev https://github.com/curl/curl master | tail -8 | $LOGCMDID tcdbutil
 fi
 
+# Replace short hashes with long ones
 $LOGCMD tcaugmentgithash $VERBOSITY $DRY
-
-# The following must be done at least once a day, regardless of $HOURS
-readonly CURLFILE=$(curl -LsSf --max-time 999 --compressed https://curl.se/snapshots/ | sed -n -Ee '/NEWEST tar.xz/s/^.*(curl-[-.[:alnum:]]+\.tar\.xz).*$/\1/p')
-readonly CURLDAILYPATH="$XDG_CACHE_HOME/curldaily/$CURLFILE"
-if [[ -z "$CURLFILE" ]]; then
-    $LOGCMDNOLVL echo Error determining daily curl
-else
-    if [[ -f "$CURLDAILYPATH" ]]; then
-        $LOGCMDNOLVL echo "Daily build source file $CURLFILE is already downloaded!"
-    else
-        # --retry-connrefused should be added if the curl version supports it
-        $LOGCMDNOLVL curl -o "$CURLDAILYPATH" -LsSf --max-time 999 --retry 6 --xattr "https://curl.se/snapshots/$CURLFILE"
-    fi
-fi
-
-# The following must be done at least once a day (well, once every two days due to the next section)
-if [[ -f "$CURLDAILYPATH" ]]; then
-    $LOGCMD tcaugmentcurldaily $VERBOSITY $DRY --howrecent $((3 * 24)) "$CURLDAILYPATH"
-else
-    $LOGCMDNOLVL echo "Daily curl build file $CURLFILE could not be downloaded!"
-fi
-
-# Augment yesterday's daily builds, too, because it can be many hours before some autobuilds become
-# available and we want to augment them even if they show up after the new daily build is ready.
-# Use 1 hour past UTC as the time zone to give a run starting within an hour after midnight an
-# extra hour to do something useful, since otherwise it will almost certainly have the same date
-# as the daily file we just checked above.
-readonly YESTERDAY="$(TZ=UTC+1 date -d yesterday +'%Y%m%d')"
-if ls "$XDG_CACHE_HOME/curldaily/"*-"$YESTERDAY"* >/dev/null 2>&1; then
-    $LOGCMD tcaugmentcurldaily $VERBOSITY $DRY --howrecent $((4 * 24)) "$XDG_CACHE_HOME/curldaily/"*-"$YESTERDAY"*
-fi
 
 if [[ "$1" == "--no-reports" ]]; then
 
