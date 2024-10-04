@@ -34,6 +34,14 @@ jobs:
           # at the default false.
           # https://github.com/actions/checkout/issues/1467
           # fetch-tags: true
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          # Basing the key on only the testclutch requirements means that any updates to pip
+          # packages & dependencies installed in this workflow (i.e. pytype) won't be cached.
+          # This is suboptimal but not really worth trying to fix.
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements-testclutch.txt') }}
+          restore-keys: ${{ runner.os }}-pip-
       - name: 'install deps'
         run: >
             sudo apt-get update -y &&
@@ -49,7 +57,7 @@ jobs:
             pytype distfiles/*.py
             tidy -qe distfiles/*.html
             shellcheck --shell=bash -e SC1091 builddeployment distfiles/application/bin/{install-cron-jobs,clean-cache-job,post-deploy,setup-vars}
-            shellcheck -e SC1091,SC2086,SC2155 distfiles/application/bin/{comment-pr,incremental-update-job}
+            shellcheck -e SC1091,SC2086 distfiles/application/bin/{comment-pr,incremental-update-job}
       - name: 'build'
         run: ./builddeployment "$GITBRANCH" "$GITREPO"
       - uses: actions/upload-artifact@v4
