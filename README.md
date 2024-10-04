@@ -71,10 +71,10 @@ exec /var/www/webroot/ROOT/application/bin/post-deploy
 
 # Redeployment
 
-To update the software, just upload a new bundle and deploy it as before. The
-*Post deploy* hook should remain the same as before.
+To update Test Clutch, just upload a new bundle and deploy it as before. The
+*Post deploy* hook should already be set as above.
 
-When using the *Redeploy* option to updates the application servers, ensure
+When using the *Redeploy* option to update the application servers, ensure
 that *Keep volume data* is ON. If redeployment happens with that off, the
 application code will be gone and there will be a site outage until you deploy
 a bundle again. Once the redeployment completes, log in via ssh and manually
