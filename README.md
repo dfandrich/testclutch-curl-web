@@ -37,7 +37,7 @@ environment from scratch by following these steps:
 0. At the top of the environment topology diagram, click *SSL* and *enable wildcard SSL*
 0. in the *Application* block, choose *Apache Python*
     - tested version: Apache 2.4.62
-    - tested version: Python 3.11.9
+    - tested version: Python 3.11.10
     - tested version: Almalinux 9
 0. Under *Application Servers*:
     - 1 reserved cloudlet, 1 scaling limit, 1 horizontal scaling
@@ -52,7 +52,7 @@ environment from scratch by following these steps:
     - horizontal scaling: stateless
     - auto-clustering: OFF
     - access via SLB: OFF
-    - disk limit 25 GB
+    - disk limit 30 GB
 0. In *Application Servers*, *Settings→Volumes*
     - Choose Add, Data Container, Shared Storage node, click checkbox for
       `/data /data`, then *Add*, *Apply*
