@@ -34,6 +34,11 @@ jobs:
           # at the default false.
           # https://github.com/actions/checkout/issues/1467
           # fetch-tags: true
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements-testclutch.txt') }}
+          restore-keys: ${{ runner.os }}-pip-
       - name: 'install deps'
         run: >
             sudo apt-get update -y &&
