@@ -54,7 +54,7 @@ jobs:
             pytype distfiles/*.py
             tidy -qe distfiles/*.html
             shellcheck --shell=bash -e SC1091 builddeployment distfiles/application/bin/{install-cron-jobs,clean-cache-job,post-deploy,setup-vars}
-            shellcheck -e SC1091,SC2086,SC2155 distfiles/application/bin/{comment-pr,incremental-update-job}
+            shellcheck -e SC1091,SC2086 distfiles/application/bin/{comment-pr,incremental-update-job}
       - name: 'build'
         run: ./builddeployment "$GITBRANCH" "$GITREPO"
       - uses: actions/upload-artifact@v4
