@@ -1,5 +1,6 @@
 #!/bin/bash
 # Daily job to download logs and generate reports
+set -o pipefail
 . "$(dirname "$0")"/setup-vars
 
 # Number of hours of logs to bring in on every run
@@ -17,6 +18,11 @@ readonly LOGCMD='systemd-cat --level-prefix=true --priority=warning'
 readonly LOGCMDNOLVL='systemd-cat --level-prefix=false --priority=warning'
 # First argument is an identifier; this is used in a pipe where the command can't be identified
 readonly LOGCMDID='systemd-cat --level-prefix=true --priority=warning --identifier'
+# Log a high-priority failure message
+readonly LOGFAILURE='eval systemd-cat --level-prefix=false --priority=err echo Job failed with status $?'
+
+# $LOGCMD prefix for the error level
+readonly ERRLVL='<3>'
 
 # Enable syslog prefixes on logs, and optionally the verbosity level
 #readonly VERBOSITY=--debug --level-prefix
@@ -44,7 +50,7 @@ if [[ -e "$LOCKFILE" ]]; then
     $LOGCMDNOLVL echo -n Lock created:
     $LOGCMDNOLVL ls -l "$LOCKFILE"
     if ps -p "$(cat "$LOCKFILE")" > /dev/null; then
-        $LOGCMDNOLVL echo "Aborted daily update"
+        $LOGCMD echo "${ERRLVL}Aborted daily update"
         exit 1
     fi
     $LOGCMDNOLVL echo Deleting stale lock
@@ -55,29 +61,30 @@ fi
 echo $$ > "$LOCKFILE"
 
 # Download logs
-$LOGCMD tcingestlog $VERBOSITY $DRY --origin=circle --howrecent $HOURS
-$LOGCMD tcingestlog $VERBOSITY $DRY --origin=curlauto --howrecent $HOURS
+$LOGCMD tcingestlog $VERBOSITY $DRY --origin=circle --howrecent $HOURS || $LOGFAILURE
+$LOGCMD tcingestlog $VERBOSITY $DRY --origin=curlauto --howrecent $HOURS || $LOGFAILURE
 if [[ -r "$XDG_DATA_HOME/auth/ghatoken" ]]; then
-    $LOGCMD tcingestlog $VERBOSITY $DRY --origin=gha --authfile "$XDG_DATA_HOME/auth/ghatoken" --howrecent $HOURS
+    $LOGCMD tcingestlog $VERBOSITY $DRY --origin=gha --authfile "$XDG_DATA_HOME/auth/ghatoken" --howrecent $HOURS || $LOGFAILURE
 else
-    $LOGCMDNOLVL echo Skipping GHA ingestion due to no available token
+    $LOGCMD echo "${ERRLVL}Skipping GHA ingestion due to no available token"
 fi
 
 # Update the git checkout
 # git 1.8.3 doesn't support -C to select the repository to use
-$LOGCMDNOLVL env GIT_DIR="$XDG_DATA_HOME/curl.git" git fetch origin master:master
+$LOGCMDNOLVL env GIT_DIR="$XDG_DATA_HOME/curl.git" git fetch origin master:master || $LOGFAILURE
 # Since this is done entirely locally, always ingest a lot more than we need to to reduce
 # the chance of a commit being missed.
 readonly GITHOURS=$((HOURS * 50))
-$LOGCMD tcgitcommitinfo $VERBOSITY $DRY "$XDG_DATA_HOME/curl.git" "$GITHOURS hours ago"
+$LOGCMD tcgitcommitinfo $VERBOSITY $DRY "$XDG_DATA_HOME/curl.git" "$GITHOURS hours ago" || $LOGFAILURE
 # If this shows an error, use commitchainrev to start at the given commit and use the last
 # "commit" in the list as the last parameter in this command:
 if ! $LOGCMDNOLVL tcdbutil checkcommitchain https://github.com/curl/curl master "$FIRST_COMMIT"; then
     tcdbutil commitchainrev https://github.com/curl/curl master | tail -8 | $LOGCMDID tcdbutil
+    $LOGCMD echo "${ERRLVL}checkcommitchain failure"
 fi
 
 # Replace short hashes with long ones
-$LOGCMD tcaugmentgithash $VERBOSITY $DRY
+$LOGCMD tcaugmentgithash $VERBOSITY $DRY || $LOGFAILURE
 
 if [[ "$1" == "--no-reports" ]]; then
 
@@ -88,23 +95,23 @@ else
     $LOGCMDNOLVL echo Starting report generation
 
     REPORTTMP="$(mktemp "$REPORTROOT/tmp.XXXXXXXXXX")"
-    tcmetadatastats $VERBOSITY --html --report=metadata_values 2>&1 > "$REPORTTMP" | $LOGCMDID tcmetadatastats
+    tcmetadatastats $VERBOSITY --html --report=metadata_values 2>&1 > "$REPORTTMP" | $LOGCMDID tcmetadatastats || $LOGFAILURE
     mv "$REPORTTMP" "$REPORTROOT"/metadata-summary.html
 
     REPORTTMP="$(mktemp "$REPORTROOT/tmp.XXXXXXXXXX")"
-    tcmetadatastats $VERBOSITY --html --report=feature_matrix 2>&1 > "$REPORTTMP" | $LOGCMDID tcmetadatastats
+    tcmetadatastats $VERBOSITY --html --report=feature_matrix 2>&1 > "$REPORTTMP" | $LOGCMDID tcmetadatastats || $LOGFAILURE
     mv "$REPORTTMP" "$REPORTROOT"/feature-matrix.html
 
     REPORTTMP="$(mktemp "$REPORTROOT/tmp.XXXXXXXXXX")"
-    tcmetadatastats $VERBOSITY --html --report=test_run_stats --howrecent="$REDUCEDSTATSHOURS" 2>&1 > "$REPORTTMP" | $LOGCMDID tcmetadatastats
+    tcmetadatastats $VERBOSITY --html --report=test_run_stats --howrecent="$REDUCEDSTATSHOURS" 2>&1 > "$REPORTTMP" | $LOGCMDID tcmetadatastats || $LOGFAILURE
     mv "$REPORTTMP" "$REPORTROOT"/test-stats.html
 
     REPORTTMP="$(mktemp "$REPORTROOT/tmp.XXXXXXXXXX")"
-    tcmetadatastats $VERBOSITY --html --report=test_results_count --howrecent="$REDUCEDSTATSHOURS" 2>&1 > "$REPORTTMP" | $LOGCMDID tcmetadatastats
+    tcmetadatastats $VERBOSITY --html --report=test_results_count --howrecent="$REDUCEDSTATSHOURS" 2>&1 > "$REPORTTMP" | $LOGCMDID tcmetadatastats || $LOGFAILURE
     mv "$REPORTTMP" "$REPORTROOT"/results-count.html
 
     REPORTTMP="$(mktemp "$REPORTROOT/tmp.XXXXXXXXXX")"
-    tcanalysissum $VERBOSITY --html 2>&1 > "$REPORTTMP" | $LOGCMDID tcanalysissum
+    tcanalysissum $VERBOSITY --html 2>&1 > "$REPORTTMP" | $LOGCMDID tcanalysissum || $LOGFAILURE
     mv "$REPORTTMP" "$REPORTROOT"/summary.html
 
 fi
