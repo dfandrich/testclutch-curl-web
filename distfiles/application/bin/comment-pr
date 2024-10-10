@@ -1,6 +1,7 @@
 #!/bin/bash
 # Job to analyze outstanding PRs for test issues and add a comment when
 # something is found.
+set -o pipefail
 . "$(dirname "$0")"/setup-vars
 
 # Log lines (may) begin with <level>
@@ -9,6 +10,8 @@ readonly LOGCMD='systemd-cat --level-prefix=true --priority=warning'
 readonly LOGCMDNOLVL='systemd-cat --level-prefix=false --priority=warning'
 # First argument is an identifier; this is used in a pipe where the command can't be identified
 readonly LOGCMDID='systemd-cat --level-prefix=true --priority=warning --identifier'
+# Log a high-priority failure message
+readonly LOGFAILURE='eval systemd-cat --level-prefix=false --priority=err echo Job failed with status $?'
 
 # Enable syslog prefixes on logs, and optionally the verbosity level
 #readonly VERBOSITY=--debug --level-prefix
@@ -23,7 +26,7 @@ $LOGCMDNOLVL echo "version $(cat "$HOME/ROOT/version.txt")"
 # failure status
 
 PRTMP="$(mktemp)"
-tcanalyzepr $VERBOSITY --authfile "$XDG_DATA_HOME/auth/ghatoken" --ci-status --ready-prs --only-failed-prs 2>&1 > "$PRTMP" | $LOGCMDID tcanalyzepr
+tcanalyzepr $VERBOSITY --authfile "$XDG_DATA_HOME/auth/ghatoken" --ci-status --ready-prs --only-failed-prs 2>&1 > "$PRTMP" | $LOGCMDID tcanalyzepr || $LOGFAILURE
 PRS="$(cat "$PRTMP")"
 rm -f "$PRTMP"
 if [[ -z "$PRS" ]]; then
@@ -35,13 +38,13 @@ else
     ###########
     # Read test logs for all configured CI services
 
-    $LOGCMD tcanalyzepr $VERBOSITY --gather-analysis --origin=circle --pr $PRS
-    $LOGCMD tcanalyzepr $VERBOSITY --gather-analysis --origin=gha --authfile "$XDG_DATA_HOME/auth/ghatoken" --pr $PRS
+    $LOGCMD tcanalyzepr $VERBOSITY --gather-analysis --origin=circle --pr $PRS || $LOGFAILURE
+    $LOGCMD tcanalyzepr $VERBOSITY --gather-analysis --origin=gha --authfile "$XDG_DATA_HOME/auth/ghatoken" --pr $PRS || $LOGFAILURE
 
     ###########
     # Comment on any PRs that deserve a comment
 
-    $LOGCMD tcanalyzepr $VERBOSITY --comment --authfile "$XDG_DATA_HOME/auth/ghatoken" --pr $PRS
+    $LOGCMD tcanalyzepr $VERBOSITY --comment --authfile "$XDG_DATA_HOME/auth/ghatoken" --pr $PRS || $LOGFAILURE
 fi
 
 $LOGCMDNOLVL echo Completed PR analysis
