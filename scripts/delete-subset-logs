@@ -1,0 +1,34 @@
+#!/bin/bash
+# Delete journald log files that are subsets of other log files.
+# This is done by comparing the timestamp of each pair of log files and
+# deleting the older of the two if they start the same.  This requires that the
+# log files have proper filesystem mtimes so that they can be ordered in time.
+#
+# This works by comparing each file to the next one on the list. To avoid a
+# race condition by listing the file directory twice, the listing is stored in
+# a temporary file.
+#
+# Note that this does not actually notice files that are *completely
+# identical*, but rather only ones where one is a superset of the other.
+# This condition happens when a log file is copied from a running system before
+# it is "full" and has been rotated by systemd. There is no point in keeping an
+# older partial log file around once the full file has been copied.
+
+if [[ -z "$1" ]]; then
+    echo Usage: "$0: <systemd journal log files>"
+    exit 0
+fi
+
+TMPFILE="$(mktemp)"
+trap 'rm -f "${TMPFILE}"' EXIT
+
+ls -tr "$@" >"$TMPFILE"
+if [[ "$(wc -l "$TMPFILE" | awk '{print $1}')" -lt 2 ]]; then
+    echo Error: need at least two files to compare >&2
+    exit 1
+fi
+paste -d' ' <(head -n -1 "$TMPFILE") <(tail -n +2 "$TMPFILE") | \
+xargs -n2 /bin/bash -c \
+    'cmp <(journalctl -o export --file "$1") <(journalctl -o export --file "$2") |& \
+     grep -q "EOF on.*after byte" && echo "$1" ' x | \
+xargs -I{} -t rm {}

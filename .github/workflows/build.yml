@@ -54,10 +54,11 @@ jobs:
       - name: 'lint'
         run: |
             flake8 --max-line-length=100 --ignore=D100,D103,W503 distfiles/*.py distfiles/application/config/testclutchrc
-            pytype distfiles/*.py
+            pytype distfiles/*.py scripts/*.py
             tidy -qe distfiles/*.html
             shellcheck --shell=bash -e SC1091 builddeployment distfiles/application/bin/{install-cron-jobs,clean-cache-job,post-deploy,setup-vars}
             shellcheck -e SC1091,SC2086 distfiles/application/bin/{comment-pr,incremental-update-job}
+            shellcheck -e SC2016 scripts/delete-subset-logs scripts/plot-job-times
       - name: 'build'
         run: ./builddeployment "$GITBRANCH" "$GITREPO"
       - uses: actions/upload-artifact@v4
