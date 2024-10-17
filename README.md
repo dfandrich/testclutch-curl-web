@@ -85,10 +85,14 @@ redeployment.
 # Tokens
 
 GitHub requires an access token for Test Clutch to download GitHub Actions
-logs. Create one by going to https://github.com/settings/tokens and choosing
-fine-grained tokens. Create a new token with these characteristics:
+logs and to comment on pull requests. Create one by going to
+https://github.com/settings/tokens and choosing fine-grained tokens. Create a
+new token with these characteristics:
 
-  - Public repository access (no other special fine-grained access is needed)
+  * Resource owner (select curl)
+  * Only select repositories (selecting the source repository or repositories)
+  * "Metadata" repository permissions (read)
+  * "Pull requests" repository permissions (read and write)
 
 Copy the token contents from the web browser and store it in a file called
 `ghatoken` in a protected location on your local machine. Use the *Application
