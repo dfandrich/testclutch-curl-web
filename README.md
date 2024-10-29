@@ -82,6 +82,9 @@ run the post deploy script */var/www/webroot/ROOT/application/bin/post-deploy*.
 This is necessary because the crontab file is not preserved over the
 redeployment.
 
+Also, remember to download any needed journal logs first as they will be lost
+during redeployment.
+
 # Tokens
 
 GitHub requires an access token for Test Clutch to download GitHub Actions
