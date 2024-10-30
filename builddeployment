@@ -13,7 +13,10 @@ readonly TAG="${1:-master}"
 # Build bundle for this CPython version
 readonly PYVER=3.11
 
-# Use these pip package platforms
+# The target system for which we want to build
+readonly TARGETSYS="CPython$PYVER-Linux-x86_64"
+
+# Use these pip package platforms; must be compatible with $TARGETSYS
 declare -ar PLATFORMS=(linux_x86_64 manylinux2014_x86_64)
 
 # Get source
@@ -42,29 +45,21 @@ python3 -m pip install 'pip>=23'
 
 # Check if the Python version available here matches the run-time
 # version needed
-if [[ "$(python3 -c "import platform,sys; print(f'{platform.python_implementation()}{sys.version_info.major}.{sys.version_info.minor}')")" != "CPython$PYVER" ]]; then
-    echo Python version is not CPython "$PYVER" so byte compilation is not available
+if [[ "$(python3 -c "import platform,sys; print(f'{platform.python_implementation()}{sys.version_info.major}.{sys.version_info.minor}-{platform.system()}-{platform.machine()}')")" == "$TARGETSYS" ]]; then
+    # We're running on the target system, so we're able to compile modules if necessary.
+    # This check is commingling Python bytecode compilation with C extension compilation; the
+    # architecture doesn't need to match for the former but does for the latter. Avoiding any
+    # kind of compilation is more straightforward, and the run-time savings of bytecode
+    # compilation only are likely to be pretty minimal since these are all fairly long-running
+    # scripts whose compile times are amortized over long run times.
+    echo Python version matches "$TARGETSYS" so compilation is possible
+    PIPARCHOPTS=
+else
+    echo Python version is not "$TARGETSYS" so compilation is not possible
+    PIPARCHOPTS="--no-compile --python-version=$PYVER --implementation=cp ${PLATFORMS[*]/#/--platform=} --only-binary=:all:"
 fi
-# If Python versions match, we could add --compile to pip install to generate
-# useful byte code files.
 
-# Get Python dependencies and install everything under build/
-# Ideally, we'd want --compile here and then remove the source code for a
-# minimal installation package, but two things conspire against that:
-# 1) the Python major/minor version used to compile must match the version used
-#    at run-time,
-# 2) the compiled versions in __pycache__ are only used if the .py file also
-#    exists.
-# The first issue can only be overcome by ensuring the right major/minor
-# version of Python is available when this script is run (done by the check
-# above).  The second issue can be overcome by moving the files from
-# __pycache__ to the parent directory then each renamed (to FOO.pyc) (pip
-# doesn't seem to offer an option to avoid __pycache__ and name mangling, but
-# -X pycache_prefix=PATH might be utilized for this).
-# But even if this is done, the run-time savings are likely to be pretty minimal
-# since these are all fairly long-running scripts whose compile times are
-# amortized over long run times.
-python3 -m pip install --disable-pip-version-check --isolated --target="$PWD/build/application/python" --no-compile --python-version="$PYVER" --implementation=cp "${PLATFORMS[@]/#/--platform=}" --only-binary=:all: -r requirements-testclutch.txt tmp$$git/testclutch
+python3 -m pip install --disable-pip-version-check --isolated --target="$PWD/build/application/python" $PIPARCHOPTS -r requirements-testclutch.txt tmp$$git/testclutch
 test -e testclutch_deploy-requirements.txt && mv -f testclutch_deploy-requirements.txt testclutch_deploy-requirements.txt.old
 python3 -m pip list --disable-pip-version-check --isolated --path="$PWD/build/application/python" --format=freeze > testclutch_deploy-requirements.txt
 rm -rf tmp$$git
