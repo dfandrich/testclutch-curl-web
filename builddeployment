@@ -13,7 +13,10 @@ readonly TAG="${1:-master}"
 # Build bundle for this CPython version
 readonly PYVER=3.11
 
-# Use these pip package platforms
+# The target system for which we want to build
+readonly TARGETSYS="CPython$PYVER-Linux-x86_64"
+
+# Use these pip package platforms; must be compatible with $TARGETSYS
 declare -ar PLATFORMS=(linux_x86_64 manylinux2014_x86_64)
 
 # Get source
@@ -42,8 +45,13 @@ python3 -m pip install 'pip>=23'
 
 # Check if the Python version available here matches the run-time
 # version needed
-if [[ "$(python3 -c "import platform,sys; print(f'{platform.python_implementation()}{sys.version_info.major}.{sys.version_info.minor}')")" != "CPython$PYVER" ]]; then
-    echo Python version is not CPython "$PYVER" so byte compilation is not available
+if [[ "$(python3 -c "import platform,sys; print(f'{platform.python_implementation()}{sys.version_info.major}.{sys.version_info.minor}-{platform.system()}-{platform.machine()}')")" == "$TARGETSYS" ]]; then
+    # We're running on the target system, so we're able to compile modules if necessary
+    echo Python version matches "$TARGETSYS" so compilation is possible
+    PIPARCHOPTS=
+else
+    echo Python version is not "$TARGETSYS" so compilation is not possible
+    PIPARCHOPTS="--no-compile --python-version=$PYVER --implementation=cp ${PLATFORMS[*]/#/--platform=} --only-binary=:all:"
 fi
 # If Python versions match, we could add --compile to pip install to generate
 # useful byte code files.
@@ -64,7 +72,7 @@ fi
 # But even if this is done, the run-time savings are likely to be pretty minimal
 # since these are all fairly long-running scripts whose compile times are
 # amortized over long run times.
-python3 -m pip install --disable-pip-version-check --isolated --target="$PWD/build/application/python" --no-compile --python-version="$PYVER" --implementation=cp "${PLATFORMS[@]/#/--platform=}" --only-binary=:all: -r requirements-testclutch.txt tmp$$git/testclutch
+python3 -m pip install --disable-pip-version-check --isolated --target="$PWD/build/application/python" $PIPARCHOPTS -r requirements-testclutch.txt tmp$$git/testclutch
 test -e testclutch_deploy-requirements.txt && mv -f testclutch_deploy-requirements.txt testclutch_deploy-requirements.txt.old
 python3 -m pip list --disable-pip-version-check --isolated --path="$PWD/build/application/python" --format=freeze > testclutch_deploy-requirements.txt
 rm -rf tmp$$git
