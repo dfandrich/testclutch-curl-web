@@ -89,19 +89,23 @@ during redeployment.
 
 GitHub requires an access token for Test Clutch to download GitHub Actions
 logs and to comment on pull requests. Create one by going to
-https://github.com/settings/tokens and choosing fine-grained tokens. Create a
-new token with these characteristics:
+https://github.com/settings/tokens and choosing a Classic token with the
+`public_repo` scope enabled. This can be done by any GitHub user, including the
+`testclutch` robot user.
+
+When running as a user who is an owner of the curl repository, a fine-grained
+token is preferred.  Create a token with these characteristics:
 
   * Resource owner (select curl)
   * Only select repositories (selecting the source repository or repositories)
   * "Metadata" repository permissions (read)
   * "Pull requests" repository permissions (read and write)
 
-Copy the token contents from the web browser and store it in a file called
-`ghatoken` in a protected location on your local machine. Use the *Application
-Servers - Config* menu in Virtuozzo to upload that file to the container in the
-location `/data/auth/ghatoken`. Once the file is there, the periodic update job
-will start downloading GitHub Actions logs on its next run.
+Either way, copy the token contents from the web browser and store it in a file
+called `ghatoken` in a protected location on your local machine. Use the
+*Application Servers - Config* menu in Virtuozzo to upload that file to the
+container in the location `/data/auth/ghatoken`. Once the file is there, the
+periodic update job will start downloading GitHub Actions logs on its next run.
 
 # Logs
 
