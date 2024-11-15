@@ -80,7 +80,9 @@ application code will be gone and there will be a site outage until you deploy
 a bundle again. Once the redeployment completes, log in via ssh and manually
 run the post deploy script */var/www/webroot/ROOT/application/bin/post-deploy*.
 This is necessary because the crontab file is not preserved over the
-redeployment.
+redeployment. Instead of manually running the post deploy script like this, you
+can instead deploy a new (or old) application version (under the *Deployment*
+section above) which will run the post deploy script for you.
 
 Also, remember to download any needed journal logs first as they will be lost
 during redeployment.
