@@ -8,14 +8,16 @@ gnuplot -p -e "filename='$DATAFILE'" - <<EOF
 if (!exists("filename")) filename='times.csv'
 set title "Test Clutch for curl job durations"
 set xlabel "Date"
-set ylabel "Daily Duration (seconds)"
+set ylabel "Daily Duration (hours)"
 set y2label "PR Analysis Duration (seconds)"
-set ytics 1800
-set y2tics 600
+set ytics 1
+set mytics 4
+set y2tics 60
+#set my2tics 4
 set yrange [0:]
 set y2range [0:]
 set xtics 86400
-set grid ytics
+set grid ytics mytics xtics
 set datafile separator ","
 set xdata time
 set timefmt "%s"
@@ -29,8 +31,7 @@ set term wxt size 1800, 900
 set xrange [system("date -d'-30 days' +%s"):]
 # Bar is centered, so move the Daily bar earlier to correspond with the job start time
 plot \
-    filename using (\$1 - \$2 / 2):2:2 title "Daily" with boxes, \
+    filename using (\$1 - \$2 / 2):(\$2 / 3600):2 title "Daily" with boxes, \
     filename using 1:3 title "Daily Aborts", \
-    filename using 1:(6*3600) title "6 hours" with lines, \
     filename using 1:4 axis x1y2 title "PR Analysis" with boxes
 EOF

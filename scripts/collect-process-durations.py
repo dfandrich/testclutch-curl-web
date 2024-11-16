@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Collect Test Clutch job run times from the journal logs.
 
-They are written in CSV format for easy graphing.
+They are written in CSV format for easy graphing. The values are in seconds and the fields are:
+    time since 1970,job duration,job duration until abort,PR analysis duration
 """
 
 import functools
