@@ -2,7 +2,8 @@
 """Collect Test Clutch job run times from the journal logs.
 
 They are written in CSV format for easy graphing. The values are in seconds and the fields are:
-    time since 1970,job duration,job duration until abort,PR analysis duration
+    time since 1970,job duration,job duration until abort,PR analysis duration,version
+They may not be sorted by time.
 """
 
 import functools
@@ -12,11 +13,16 @@ import subprocess
 import sys
 
 
+# Dump the raw values at the end
 DEBUG = False
+
+# Only log version when it changes
+VERSION_CHANGES = True
 
 PR_REGEX = r'^(Starting|Completed|Aborted) PR analysis'
 DAILY_REGEX = r'^(Starting|Completed|Aborted|Aborting) daily update'
-ALL_REGEX = f'({PR_REGEX})|({DAILY_REGEX})'
+VERSION_REGEX = r'^version \w+$'
+ALL_REGEX = f'({PR_REGEX})|({DAILY_REGEX})|({VERSION_REGEX})'
 
 # This is the Python character map in which the logs are assumed. If any errors are encountered
 # during decoding (such as if a binary file was displayed in a log dump), they will automatically
@@ -70,25 +76,42 @@ def process_log(regex: str, fn: str) -> list:
 def analyze(times: list):
     lastsess = -1
     lasttime = 0
+    lastversion = ''
+    version = ''
     for timestamp, session, message in times:
         if session == lastsess:
             if 'Completed' in message or 'Abort' in message:
+                if VERSION_CHANGES and lastversion == version:
+                    # Only write more version numbers when they change
+                    version = ''
                 duration = timestamp - lasttime
                 if duration > MAX_DURATION:
                     # sanity check failed
                     print('duration too long:', timestamp, session, message, file=sys.stderr)
                     continue
                 if 'PR analysis' in message:
-                    print(f'{timestamp},,,{duration:.1f}')
+                    print(f'{timestamp},,,{duration:.1f},{version}')
                 elif 'Abort' in message:
                     # update
-                    print(f'{timestamp},,{duration:.1f},,')
+                    print(f'{timestamp},,{duration:.1f},,,{version}')
+
+                    # Set lastversion only if we actually have a new version
+                    if version:
+                        # The new version stop being written only after we've logged a main job
+                        lastversion = version
                 else:
                     # update
-                    print(f'{timestamp},{duration:.1f},,')
+                    print(f'{timestamp},{duration:.1f},,,{version}')
+
+                    # Set lastversion only if we actually have a new version
+                    if version:
+                        # The new version kicks in only after we've written a main job duration
+                        lastversion = version
 
                 lastsess = -1
                 lasttime = 0
+            elif 'version' in message:
+                version = message.split()[1]
             elif timestamp == lasttime:
                 # probably duplicated log files and two Starts in a row
                 print('probable duplicate:', timestamp, session, message, file=sys.stderr)
@@ -97,6 +120,7 @@ def analyze(times: list):
         elif 'Start' in message:
             lastsess = session
             lasttime = timestamp
+            version = ''
         else:
             # mismatched log entry (probably start of log file and missing "Start")
             print('mismatched entry:', timestamp, session, message, file=sys.stderr)
@@ -108,12 +132,12 @@ def main():
         # flatten the results into a single list
         times = [log for res in logresults for log in res]
 
-    # sort by session then time
+    # sort by session (to group everything in each session) then time
     times.sort(key=lambda x: (x[1], x[0]))
     analyze(times)
     if DEBUG:
         for timestamp, session, message in times:
-            print(f'{timestamp}\t{session}\t{message}')
+            print(f'{timestamp}\t{session}\t{message}', file=sys.stderr)
 
 
 if __name__ == '__main__':
