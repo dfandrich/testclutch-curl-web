@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Collect Test Clutch job run times from the journal logs.
 
-They are written in CSV format for easy graphing. The values are in seconds and the fields are:
-    time since 1970,job duration,job duration until abort,PR analysis duration,version
+They are written in CSV format for easy graphing. The time values are in seconds and the fields are:
+    time since 1970,job duration,job duration until abort,PR analysis duration,version,# comments
 They may not be sorted by time.
 """
 
@@ -22,7 +22,8 @@ VERSION_CHANGES = True
 PR_REGEX = r'^(Starting|Completed|Aborted) PR analysis'
 DAILY_REGEX = r'^(Starting|Completed|Aborted|Aborting) daily update'
 VERSION_REGEX = r'^version \w+$'
-ALL_REGEX = f'({PR_REGEX})|({DAILY_REGEX})|({VERSION_REGEX})'
+COMMENT_REGEX = r'comment on PR'
+ALL_REGEX = f'({PR_REGEX})|({DAILY_REGEX})|({VERSION_REGEX})|({COMMENT_REGEX})'
 
 # This is the Python character map in which the logs are assumed. If any errors are encountered
 # during decoding (such as if a binary file was displayed in a log dump), they will automatically
@@ -78,6 +79,7 @@ def analyze(times: list):
     lasttime = 0
     lastversion = ''
     version = ''
+    comment = 0
     for timestamp, session, message in times:
         if session == lastsess:
             if 'Completed' in message or 'Abort' in message:
@@ -89,11 +91,13 @@ def analyze(times: list):
                     # sanity check failed
                     print('duration too long:', timestamp, session, message, file=sys.stderr)
                     continue
+                if comment:
+                    print(f'{timestamp},,,,,{comment}')
                 if 'PR analysis' in message:
-                    print(f'{timestamp},,,{duration:.1f},{version}')
+                    print(f'{timestamp},,,{duration:.1f},{version},')
                 elif 'Abort' in message:
                     # update
-                    print(f'{timestamp},,{duration:.1f},,,{version}')
+                    print(f'{timestamp},,{duration:.1f},,,{version},')
 
                     # Set lastversion only if we actually have a new version
                     if version:
@@ -101,7 +105,7 @@ def analyze(times: list):
                         lastversion = version
                 else:
                     # update
-                    print(f'{timestamp},{duration:.1f},,,{version}')
+                    print(f'{timestamp},{duration:.1f},,,{version},')
 
                     # Set lastversion only if we actually have a new version
                     if version:
@@ -112,6 +116,8 @@ def analyze(times: list):
                 lasttime = 0
             elif 'version' in message:
                 version = message.split()[1]
+            elif 'comment' in message:
+                comment += 1
             elif timestamp == lasttime:
                 # probably duplicated log files and two Starts in a row
                 print('probable duplicate:', timestamp, session, message, file=sys.stderr)
@@ -121,6 +127,7 @@ def analyze(times: list):
             lastsess = session
             lasttime = timestamp
             version = ''
+            comment = 0
         else:
             # mismatched log entry (probably start of log file and missing "Start")
             print('mismatched entry:', timestamp, session, message, file=sys.stderr)

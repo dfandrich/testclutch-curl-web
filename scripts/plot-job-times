@@ -8,7 +8,7 @@ gnuplot -p -e "filename='$DATAFILE'" - <<EOF
 if (!exists("filename")) filename='times.csv'
 set title "Test Clutch for curl job durations"
 set xlabel "Date"
-set ylabel "Daily Duration (hours)"
+set ylabel "Daily Duration (hours) or PR Comments"
 set y2label "PR Analysis Duration (seconds)"
 set ytics 1
 set mytics 4
@@ -35,5 +35,6 @@ plot \
     filename using 1:(\$2 / 3600 + 0.15):5 notitle with labels rotate by 45, \
     filename using 1:3 title "Daily Aborts", \
     filename using 1:3:5 notitle with labels rotate by 45, \
-    filename using 1:4 axis x1y2 title "PR Analysis" with boxes
+    filename using 1:4 axis x1y2 title "PR Analysis" with boxes, \
+    filename using 1:6 title "PR Comments" with boxes
 EOF
