@@ -116,23 +116,28 @@ Application logs are stored in the journal and may be downloaded using the
 unique identifier) and download the journal files desired. The files are
 automatically rotated.
 
-Job run times can be extracted from these journal with a command like:
+Job run times can be extracted from these journals with a command like:
 ```sh
-scripts/collect-process-durations.py system*.journal > times.csv
+scripts/collect-process-durations.py system*.journal | sort -n > times.csv
 ```
 The extracted times can be plotted using gnuplot with:
 ```sh
 scripts/plot-job-times times.csv
 ```
-If some interim partial log files have been downloaded before the completed,
+If some interim partial log files were downloaded before the completed,
 rotated ones were ready, the partial ones can be deleted with the command:
 ```sh
 scripts/delete-subset-logs system*.journal
 ```
-The modification times of the log files must remain accurate to the times they
-were downloaded or else an incorrect log file could be deleted by mistake (a
-full one instead of a partial one). The author's program `automtime` can be
-used to set the times correctly before the delete script is run if in doubt.
+to avoid duplicated data points.  The modification times of the log files must
+remain accurate to the times of the last log message or else an incorrect log
+file could be deleted by this script by mistake (a full one could be deleted
+instead of the matching partial one). The author's program `automtime`
+(available as part of
+[fileviewinfo](https://github.com/dfandrich/fileviewinfo)) can be used to set
+the times correctly before the delete script is run, if in doubt. This can
+most commonly be an issue if a partial log file is downloaded before an older,
+rotated one.
 
 ## Author
 
