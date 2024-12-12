@@ -8,7 +8,7 @@ gnuplot -p -e "filename='$DATAFILE'" - <<EOF
 if (!exists("filename")) filename='times.csv'
 set title "Test Clutch for curl job durations"
 set xlabel "Date"
-set ylabel "Daily Duration (hours) or PR Comments"
+set ylabel "Daily Duration (hours) or PR Comments (count)"
 set y2label "PR Analysis Duration (seconds)"
 set ytics 1
 set mytics 4
