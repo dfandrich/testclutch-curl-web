@@ -36,7 +36,7 @@ environment from scratch by following these steps:
 0. Choose *NEW ENVIRONMENT*
 0. At the top of the environment topology diagram, click *SSL* and *enable wildcard SSL*
 0. in the *Application* block, choose *Apache Python*
-    - tested version: Apache 2.4.62
+    - tested version: Apache 2.4.63
     - tested version: Python 3.12.8
     - tested version: Almalinux 9
 0. Under *Application Servers*:
@@ -57,7 +57,8 @@ environment from scratch by following these steps:
     - Choose Add, Data Container, Shared Storage node, click checkbox for
       `/data /data`, then *Add*, *Apply*
 0. In *<your environment>*, *Settings→Load Alerts*
-    - Change the *auto_alert_cpu* threshold to 90%.
+    - Change the *auto_alert_cpu* threshold to 95%.
+    - Change the *auto_alert_disk* threshold to 95%.
 
 # Deployment
 
