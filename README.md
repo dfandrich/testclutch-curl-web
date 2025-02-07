@@ -142,5 +142,5 @@ rotated one.
 
 ## Author
 
-Copyright (c) 2024 Dan Fandrich <dan@coneharvesters.com>
+Copyright (c) 2024-2025 Dan Fandrich <dan@coneharvesters.com>
 Licensed under the MIT license (see the file [LICENSE](LICENSE) for details)
