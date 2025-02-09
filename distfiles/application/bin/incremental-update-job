@@ -12,6 +12,9 @@ readonly HOURS=16
 # the full 90 days
 readonly REDUCEDSTATSHOURS=$((30 * 24))
 
+# Minimum disk space needed (in KiB)
+readonly MINSPACE=200000
+
 # Log lines (may) begin with <level>
 readonly LOGCMD='systemd-cat --level-prefix=true --priority=warning'
 # Log lines do not begin with <level>
@@ -40,6 +43,14 @@ readonly FIRST_COMMIT=ff67da58c4add27b05d237533d1cb39fb3894113
 
 $LOGCMDNOLVL echo Starting daily update
 $LOGCMDNOLVL echo "version $(cat "$HOME/ROOT/version.txt")"
+
+# Check for adequate disk space before starting
+if [[ "$(df --output=avail -k "$XDG_DATA_HOME" | tail -1)" -lt "$MINSPACE" ]]; then
+    $LOGCMDNOLVL echo "Not enough disk space available"
+    $LOGCMDNOLVL df
+    $LOGCMD echo "${ERRLVL}Aborted daily update"
+    exit 1
+fi
 
 # Look for an old job still running.
 # It's really slow if it is, but give it a chance to finish.
