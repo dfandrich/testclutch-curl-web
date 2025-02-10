@@ -107,23 +107,43 @@ else
 
     REPORTTMP="$(mktemp "$REPORTROOT/tmp.XXXXXXXXXX")"
     tcmetadatastats $VERBOSITY --html --report=metadata_values 2>&1 > "$REPORTTMP" | $LOGCMDID tcmetadatastats || $LOGFAILURE
-    mv "$REPORTTMP" "$REPORTROOT"/metadata-summary.html
+    if [[ -s "$REPORTTMP" ]]; then
+        mv "$REPORTTMP" "$REPORTROOT"/metadata-summary.html
+    else
+        $LOGCMD echo "${ERRLVL}Empty metadata_values report file"
+    fi
 
     REPORTTMP="$(mktemp "$REPORTROOT/tmp.XXXXXXXXXX")"
     tcmetadatastats $VERBOSITY --html --report=feature_matrix 2>&1 > "$REPORTTMP" | $LOGCMDID tcmetadatastats || $LOGFAILURE
-    mv "$REPORTTMP" "$REPORTROOT"/feature-matrix.html
+    if [[ -s "$REPORTTMP" ]]; then
+        mv "$REPORTTMP" "$REPORTROOT"/feature-matrix.html
+    else
+        $LOGCMD echo "${ERRLVL}Empty feature_matrix report file"
+    fi
 
     REPORTTMP="$(mktemp "$REPORTROOT/tmp.XXXXXXXXXX")"
     tcmetadatastats $VERBOSITY --html --report=test_run_stats --howrecent="$REDUCEDSTATSHOURS" 2>&1 > "$REPORTTMP" | $LOGCMDID tcmetadatastats || $LOGFAILURE
-    mv "$REPORTTMP" "$REPORTROOT"/test-stats.html
+    if [[ -s "$REPORTTMP" ]]; then
+        mv "$REPORTTMP" "$REPORTROOT"/test-stats.html
+    else
+        $LOGCMD echo "${ERRLVL}Empty test_run_stats report file"
+    fi
 
     REPORTTMP="$(mktemp "$REPORTROOT/tmp.XXXXXXXXXX")"
     tcmetadatastats $VERBOSITY --html --report=test_results_count --howrecent="$REDUCEDSTATSHOURS" 2>&1 > "$REPORTTMP" | $LOGCMDID tcmetadatastats || $LOGFAILURE
-    mv "$REPORTTMP" "$REPORTROOT"/results-count.html
+    if [[ -s "$REPORTTMP" ]]; then
+        mv "$REPORTTMP" "$REPORTROOT"/results-count.html
+    else
+        $LOGCMD echo "${ERRLVL}Empty test_results_count report file"
+    fi
 
     REPORTTMP="$(mktemp "$REPORTROOT/tmp.XXXXXXXXXX")"
     tcanalysissum $VERBOSITY --html 2>&1 > "$REPORTTMP" | $LOGCMDID tcanalysissum || $LOGFAILURE
-    mv "$REPORTTMP" "$REPORTROOT"/summary.html
+    if [[ -s "$REPORTTMP" ]]; then
+        mv "$REPORTTMP" "$REPORTROOT"/summary.html
+    else
+        $LOGCMD echo "${ERRLVL}Empty analysissum report file"
+    fi
 
 fi
 
