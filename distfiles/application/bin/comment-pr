@@ -4,6 +4,9 @@
 set -o pipefail
 . "$(dirname "$0")"/setup-vars
 
+# Minimum disk space needed (in KiB)
+readonly MINSPACE=100000
+
 # Log lines (may) begin with <level>
 readonly LOGCMD='systemd-cat --level-prefix=true --priority=warning'
 # Log lines do not begin with <level>
@@ -13,12 +16,23 @@ readonly LOGCMDID='systemd-cat --level-prefix=true --priority=warning --identifi
 # Log a high-priority failure message
 readonly LOGFAILURE='eval systemd-cat --level-prefix=false --priority=err echo Job failed with status $?'
 
+# $LOGCMD prefix for the error level
+readonly ERRLVL='<3>'
+
 # Enable syslog prefixes on logs, and optionally the verbosity level
 #readonly VERBOSITY=--debug --level-prefix
 readonly VERBOSITY="--verbose --level-prefix"
 
 $LOGCMDNOLVL echo Starting PR analysis
 $LOGCMDNOLVL echo "version $(cat "$HOME/ROOT/version.txt")"
+
+# Check for adequate disk space before starting
+if [[ "$(df --output=avail -k "$XDG_CACHE_HOME" | tail -1)" -lt "$MINSPACE" ]]; then
+    $LOGCMDNOLVL echo "Not enough disk space available"
+    $LOGCMDNOLVL df
+    $LOGCMD echo "${ERRLVL}Aborted PR analysis"
+    exit 1
+fi
 
 ###########
 # Get list of PRs to check on this run

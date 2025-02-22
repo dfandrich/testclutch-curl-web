@@ -13,7 +13,7 @@ readonly HOURS=16
 readonly REDUCEDSTATSHOURS=$((30 * 24))
 
 # Minimum disk space needed (in KiB)
-readonly MINSPACE=200000
+readonly MINSPACE=300000
 
 # Log lines (may) begin with <level>
 readonly LOGCMD='systemd-cat --level-prefix=true --priority=warning'
