@@ -27,8 +27,8 @@ if [[ "$(wc -l "$TMPFILE" | awk '{print $1}')" -lt 2 ]]; then
     echo Error: need at least two files to compare >&2
     exit 1
 fi
-paste -d' ' <(head -n -1 "$TMPFILE") <(tail -n +2 "$TMPFILE") | \
-xargs -n2 /bin/bash -c \
+paste -d'\n' <(head -n -1 "$TMPFILE") <(tail -n +2 "$TMPFILE") | \
+xargs -d'\n' -n2 /bin/bash -c \
     'cmp <(journalctl -o export --file "$1") <(journalctl -o export --file "$2") |& \
      grep -q "EOF on.*after byte" && echo "$1" ' x | \
 xargs -I{} -t rm {}
