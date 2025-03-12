@@ -52,7 +52,7 @@ environment from scratch by following these steps:
     - horizontal scaling: stateless
     - auto-clustering: OFF
     - access via SLB: OFF
-    - disk limit 35 GB
+    - disk limit 40 GB
 0. In *Application Servers*, *Settings→Volumes*
     - Choose Add, Data Container, Shared Storage node, click checkbox for
       `/data /data`, then *Add*, *Apply*
