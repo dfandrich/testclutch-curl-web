@@ -57,8 +57,9 @@ environment from scratch by following these steps:
     - Choose Add, Data Container, Shared Storage node, click checkbox for
       `/data /data`, then *Add*, *Apply*
 0. In *<your environment>*, *Settings→Load Alerts*
-    - Change the *auto_alert_cpu* threshold to 95%.
     - Change the *auto_alert_disk* threshold to 95%.
+    - Delete the *auto_alert_cpu* alert (the batch jobs are expected to run
+      with 100% CPU for some time)
 
 # Deployment
 
