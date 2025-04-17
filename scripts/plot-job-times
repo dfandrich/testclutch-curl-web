@@ -28,13 +28,16 @@ set style fill transparent solid
 # window size
 set term wxt size 1800, 900
 # only show the last month
-set xrange [system("date -d'-30 days' +%s"):]
+set xrange [system("date -d-30days +%s"):]
+# User-defined function
+min(a,b) = (a<b)?a:b
 # Bar is centered, so move the Daily bar earlier to correspond with the job start time
+# Make "PR Analysis" lines wider so they're more visible
 plot \
     filename using (\$1 - \$2 / 2):(\$2 / 3600):2 title "Daily" with boxes, \
     filename using 1:(\$2 / 3600 + 0.15):5 notitle with labels rotate by 45, \
     filename using 1:3 title "Daily Aborts", \
     filename using 1:3:5 notitle with labels rotate by 45, \
-    filename using 1:4 axis x1y2 title "PR Analysis" with boxes, \
-    filename using 1:6 title "PR Comments" with boxes
+    filename using 1:4:(min(1600, \$4 * 40)) axis x1y2 title "PR Analysis" with boxes, \
+    filename using 1:6:(1600) title "PR Comments" with boxes
 EOF
