@@ -16,6 +16,10 @@ flaky_builds_max = 300
 # Time in hours that makes a job "disabled"
 disabled_job_hours = 24 * 6  # 6 days
 
+# Report configuration: test_results_count
+# Number of failed tests for which to bother showing URLs (since that is slow)
+test_results_count_max_urls = 110
+
 # Which origins need to be checked before commenting on a PR
 pr_comment_origins = frozenset(('circle', 'gha'))
 
