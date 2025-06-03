@@ -34,7 +34,7 @@ LOG_CHARMAP = 'UTF-8'
 MAX_DURATION = 24 * 3600
 
 
-def process_log(regex: str, fn: str) -> list:
+def process_log(regex: str, fn: str) -> list[tuple[float, int, str]]:
     proc = subprocess.Popen(
         ['journalctl', '-o', 'export', '-g', regex, '--file', fn],
         stdout=subprocess.PIPE,
@@ -139,8 +139,13 @@ def main():
         # flatten the results into a single list
         times = [log for res in logresults for log in res]
 
-    # sort by session (to group everything in each session) then time
-    times.sort(key=lambda x: (x[1], x[0]))
+    # Sort entries by month, then session ID, then time.
+    # Sorting by month is to reduce the chance of problems due to duplicate session IDs across wide
+    # ranges of time by grouping temporally-related log entries. This can cause entry mismatches
+    # around the month transitions, though, but this happens frequently already due to journald
+    # not storing the session ID for some entries.
+    # Sorting by session ID keeps log entries in the same session together.
+    times.sort(key=lambda x: (int(x[0] / (30 * 3600 * 24)), x[1], x[0]))
     analyze(times)
     if DEBUG:
         for timestamp, session, message in times:
