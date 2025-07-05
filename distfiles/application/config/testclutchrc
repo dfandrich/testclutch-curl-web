@@ -9,6 +9,10 @@ log_parsers = [
     'testclutch.logparser.pytestparse.parse_log_file',
     'testclutch.logparser.pytestparse.parse_log_file_summary',
 ]
+
+# Whether to stop searching for more log files after the first one is found
+log_parse_single = False
+
 # Maximum number of builds to look at when performing flaky analysis
 # curl does around 100 per month, so 300 means about 3 months worth of tests
 flaky_builds_max = 300
