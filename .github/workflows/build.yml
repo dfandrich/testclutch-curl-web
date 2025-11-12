@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 1
           # This is buggy and causes an error when the triggering condition is a tag. Since the
@@ -61,12 +61,12 @@ jobs:
             shellcheck -e SC2016 scripts/delete-subset-logs scripts/plot-job-times
       - name: 'build'
         run: ./builddeployment "$GITBRANCH" "$GITREPO"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: testclutch_deploy.tar.xz
           path: testclutch_deploy.tar.xz
           retention-days: ${{ github.ref == 'refs/heads/master' && 30 || 14 }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: testclutch_deploy.txt
           path: testclutch_deploy-*.txt
