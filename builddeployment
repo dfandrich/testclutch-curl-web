@@ -11,13 +11,13 @@ readonly GITREPO="${2:-../testclutch/}"
 readonly TAG="${1:-master}"
 
 # Build bundle for this CPython version
-readonly PYVER=3.12
+readonly PYVER=3.13
 
 # The target system for which we want to build
 readonly TARGETSYS="CPython$PYVER-Linux-x86_64"
 
 # Use these pip package platforms; must be compatible with $TARGETSYS
-declare -ar PLATFORMS=(linux_x86_64 manylinux2014_x86_64)
+declare -ar PLATFORMS=(linux_x86_64 manylinux2014_x86_64 manylinux_2_14_x86_64)
 
 # Get source
 test -d build && rm -rf build
