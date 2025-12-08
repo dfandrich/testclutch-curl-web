@@ -46,7 +46,7 @@ def process_log(regex: str, fn: str) -> list[tuple[float, int, str]]:
 
     results = []
     message = ''
-    timestamp = 0
+    timestamp = 0.
     session = -1
     assert proc.stdout  # satisfy pytype
     while line := proc.stdout.readline():
@@ -58,7 +58,7 @@ def process_log(regex: str, fn: str) -> list[tuple[float, int, str]]:
             else:
                 results.append((timestamp, session, message))
             message = ''
-            timestamp = 0
+            timestamp = 0.
             session = -1
         else:
             field, value = line.split('=', 1)
