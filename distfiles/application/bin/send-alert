@@ -1,0 +1,14 @@
+#!/bin/bash
+# Send an alert to the sysadmin
+# The first line is the title and the remaining lines are the body
+. "$(dirname "$0")"/setup-vars
+
+# Send alert e-mails to this address
+ALERTADDR=dan@telarity.com
+
+# Use this subject prefix in alert e-mails
+ALERTPREFIX="testclutch-curl alert"
+
+read -r TITLE
+{ printf "To: %s\nSubject: %s: %s\nContent-Type: text/plain; charset=UTF-8\n\n" "$ALERTADDR" "$ALERTPREFIX" "$TITLE"; cat; } |
+sendmail -oi -t

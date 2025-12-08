@@ -1,0 +1,18 @@
+#!/bin/bash
+# Check for alerting conditions
+. "$(dirname "$0")"/setup-vars
+
+# Maximum time allowed since the last successful run, in seconds
+# This value allows a single failure without alerting
+readonly MAXAGE="$((15 * 3600))"
+
+# Check the time since the last successful run
+readonly AGE="$(($(date +%s) - $(date +%s -r "${XDG_DATA_HOME}/last_incremental_success" || echo 0)))"
+if [[ "$AGE" -gt "$MAXAGE" ]]; then
+    send-alert <<EOF
+Too long since the last successful ingest run
+The last successful ingest run was $AGE seconds ago, which is longer than
+the maximum time of $MAXAGE seconds. Investigate what is causing the runs
+to fail to run to successful completion.
+EOF
+fi

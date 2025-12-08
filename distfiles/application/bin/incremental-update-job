@@ -150,4 +150,7 @@ fi
 # Delete run lock file at end
 rm -f "$LOCKFILE"
 
+# Mark a successful run
+touch "${XDG_DATA_HOME}/last_incremental_success"
+
 $LOGCMDNOLVL echo Completed daily update
