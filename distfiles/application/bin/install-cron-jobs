@@ -9,6 +9,7 @@ sed -i -e '/^# TESTCLUTCH START/,/^# TESTCLUTCH END/d' -e '${/^$/d}' "$1"
 # Add an extra blank link at the end because the comment in crontab -l asks for one
 cat >> "$1" <<EOF
 # TESTCLUTCH START
+MAILTO=dan@telarity.com
 # Periodic ingest + report job
 10 0,6,12,18 * * * /var/www/webroot/ROOT/application/bin/incremental-update-job
 # Periodic ingest only job
