@@ -4,5 +4,16 @@
 readonly DAYS=7
 . "$(dirname "$0")"/setup-vars
 
+# Log lines do not begin with <level>
+readonly LOGCMDNOLVL='systemd-cat --level-prefix=false --priority=warning'
+# First argument is an identifier; this is used in a pipe where the command can't be identified
+readonly LOGCMDID='systemd-cat --level-prefix=true --priority=warning --identifier'
+
+$LOGCMDNOLVL echo Starting cache clean
+
+df "$XDG_CACHE_HOME"/testclutchlogs | $LOGCMDID clean-cache
+
 find "$HOME/ROOT/static/reports/" -xdev -depth -name 'tmp.*' -type f -mtime +"$DAYS" -delete
 find "$XDG_CACHE_HOME"/testclutchlogs -xdev -depth -type f -mtime +"$DAYS" -delete
+
+df "$XDG_CACHE_HOME"/testclutchlogs | $LOGCMDID clean-cache

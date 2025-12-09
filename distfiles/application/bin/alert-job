@@ -2,9 +2,14 @@
 # Check for alerting conditions
 . "$(dirname "$0")"/setup-vars
 
+# Log lines do not begin with <level>
+readonly LOGCMDNOLVL='systemd-cat --level-prefix=false --priority=warning'
+
 # Maximum time allowed since the last successful run, in seconds
 # This value allows a single failure without alerting
 readonly MAXAGE="$((15 * 3600))"
+
+$LOGCMDNOLVL echo Starting alert check
 
 # Check the time since the last successful run
 readonly AGE="$(($(date +%s) - $(date +%s -r "${XDG_DATA_HOME}/last_incremental_success" || echo 0)))"
