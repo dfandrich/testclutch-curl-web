@@ -31,9 +31,10 @@ pr_comment_origins = frozenset(('circle', 'gha'))
 pr_comment_url = 'https://testclutch.curl.se/'
 
 # Metadata fields over which to create the features matrix
-matrix_meta_fields = ['arch', 'targetarch', 'os', 'buildsystem', 'compiler', 'testformat',
-                      'testmode', 'withvalgrind', 'withevent', 'withduphandle', 'paralleljobs',
-                      'dailybuild', 'curldeps', 'features', 'curlprotocols']
+matrix_meta_fields = ['mintests', 'arch', 'targetarch', 'os', 'systemosver', 'buildsystem',
+                      'compiler', 'compilerversion', 'testformat', 'testmode', 'withvalgrind',
+                      'withevent', 'withduphandle', 'paralleljobs', 'dailybuild', 'curldeps',
+                      'features', 'curlprotocols']
 
 # Metadata fields to split into subfields using a regular expression
 # The format is {'fieldname': r'<regex>', ...}  where <regex> is passed to re.split to split a text
@@ -59,9 +60,16 @@ matrix_meta_transforms = {
     'withduphandle': [(r'^no$', '')],  # leave only 'yes'
     'withevent': [(r'^no$', '')],     # leave only 'yes'
     'withvalgrind': [(r'^no$', '')],  # leave only 'yes'
-    'paralleljobs': [(r'^.+$', 'yes')],  # turn anything into 'yes'
     'testmode': [(r'^normal$', '')],  # leave only 'torture'
 }
+
+# Metadata fields whose value to simply display after transformation
+matrix_meta_dump = frozenset({
+    'compilerversion',
+    'mintests',
+    'paralleljobs',
+    'systemosver'
+})
 
 # Whether to look at only the last result of a test as its result if more than one result is found
 # in a run.  This should be done if failing tests are automatically rerun in case of flakiness.
