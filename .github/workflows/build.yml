@@ -34,7 +34,7 @@ jobs:
           # at the default false.
           # https://github.com/actions/checkout/issues/1467
           # fetch-tags: true
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ~/.cache/pip
           # Basing the key on only the testclutch requirements means that any updates to pip
@@ -61,12 +61,12 @@ jobs:
             shellcheck -e SC2016 scripts/delete-subset-logs scripts/plot-job-times
       - name: 'build'
         run: ./builddeployment "$GITBRANCH" "$GITREPO"
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: testclutch_deploy.tar.xz
           path: testclutch_deploy.tar.xz
           retention-days: ${{ github.ref == 'refs/heads/master' && 30 || 14 }}
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: testclutch_deploy.txt
           path: testclutch_deploy-*.txt
