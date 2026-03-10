@@ -65,9 +65,11 @@ jobs:
         with:
           name: testclutch_deploy.tar.xz
           path: testclutch_deploy.tar.xz
+          archive: false
           retention-days: ${{ github.ref == 'refs/heads/master' && 30 || 14 }}
       - uses: actions/upload-artifact@v7
         with:
-          name: testclutch_deploy.txt
+          name: testclutch_deploy-ver.zip
           path: testclutch_deploy-*.txt
+          archive: true
           retention-days: ${{ github.ref == 'refs/heads/master' && 90 || 14 }}
