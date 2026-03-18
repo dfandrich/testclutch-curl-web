@@ -9,15 +9,31 @@ readonly LOGCMDNOLVL='systemd-cat --level-prefix=false --priority=warning'
 # This value allows a single failure without alerting
 readonly MAXAGE="$((15 * 3600))"
 
+# Minimum amount of space in KiB before warning
+readonly MINSPACE=900000
+
 $LOGCMDNOLVL echo Starting alert check
 
+# *********************************************
 # Check the time since the last successful run
 readonly AGE="$(($(date +%s) - $(date +%s -r "${XDG_DATA_HOME}/last_incremental_success" || echo 0)))"
 if [[ "$AGE" -gt "$MAXAGE" ]]; then
     send-alert <<EOF
 Too long since the last successful ingest run
-The last successful ingest run was $AGE seconds ago, which is longer than
-the maximum time of $MAXAGE seconds. Investigate what is causing the runs
+The last successful ingest run was $(( AGE / 3600 )) hours ago, which is longer than
+the maximum time of $(( MAXAGE / 3600 )) hours. Investigate what is causing the runs
 to fail to run to successful completion.
+EOF
+fi
+
+# *********************************************
+# Check for adequate disk space
+DISKSPACE="$(df --output=avail -k "$XDG_CACHE_HOME" | tail -1)"
+readonly DISKSPACE
+if [[ "$DISKSPACE" -lt "$MINSPACE" ]]; then
+    send-alert <<EOF
+Disk space is running low
+The space available is only $DISKSPACE KiB, which could fill up in just a
+few more runs.
 EOF
 fi
