@@ -139,7 +139,7 @@ def main():
         # flatten the results into a single list
         times = [log for res in logresults for log in res]
 
-    # Sort entries by month, then session ID, then time.
+    # Sort entries by month (approximately), then session ID, then time to group them in sessions.
     # Sorting by month is to reduce the chance of problems due to duplicate session IDs across wide
     # ranges of time by grouping temporally-related log entries. This can cause entry mismatches
     # around the month transitions, though, but this happens frequently already due to journald
