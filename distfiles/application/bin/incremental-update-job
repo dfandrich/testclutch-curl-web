@@ -9,7 +9,7 @@ set -o pipefail
 readonly HOURS=16
 
 # Number of hours for statistics jobs that take too much memory to run for
-# the full 90 days
+# the full 90 days or where a shorter time frame is more useful.
 readonly REDUCEDSTATSHOURS=$((30 * 24))
 
 # Minimum disk space needed (in KiB)
@@ -135,6 +135,14 @@ else
         mv "$REPORTTMP" "$REPORTROOT"/results-count.html
     else
         $LOGCMD echo "${ERRLVL}Empty test_results_count report file"
+    fi
+
+    REPORTTMP="$(mktemp "$REPORTROOT/tmp.XXXXXXXXXX")"
+    tcmetadatastats $VERBOSITY --html --report=tests_run --howrecent="$REDUCEDSTATSHOURS" 2>&1 > "$REPORTTMP" | $LOGCMDID tcmetadatastats || $LOGFAILURE
+    if [[ -s "$REPORTTMP" ]]; then
+        mv "$REPORTTMP" "$REPORTROOT"/tests-run.html
+    else
+        $LOGCMD echo "${ERRLVL}Empty tests_run report file"
     fi
 
     REPORTTMP="$(mktemp "$REPORTROOT/tmp.XXXXXXXXXX")"
