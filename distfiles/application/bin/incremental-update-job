@@ -12,6 +12,10 @@ readonly HOURS=16
 # the full 90 days or where a shorter time frame is more useful.
 readonly REDUCEDSTATSHOURS=$((30 * 24))
 
+# Number of hours for statistics jobs that need a very short time to avoid
+# running out of space.
+readonly MINIMALSTATSHOURS=$((7 * 24))
+
 # Minimum disk space needed (in KiB)
 readonly MINSPACE=300000
 
@@ -138,7 +142,7 @@ else
     fi
 
     REPORTTMP="$(mktemp "$REPORTROOT/tmp.XXXXXXXXXX")"
-    tcmetadatastats $VERBOSITY --html --report=tests_run --howrecent="$REDUCEDSTATSHOURS" 2>&1 > "$REPORTTMP" | $LOGCMDID tcmetadatastats || $LOGFAILURE
+    tcmetadatastats $VERBOSITY --html --report=tests_run --howrecent="$MINIMALSTATSHOURS" 2>&1 > "$REPORTTMP" | $LOGCMDID tcmetadatastats || $LOGFAILURE
     if [[ -s "$REPORTTMP" ]]; then
         mv "$REPORTTMP" "$REPORTROOT"/tests-run.html
     else
