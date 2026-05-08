@@ -37,3 +37,6 @@ The space available is only $DISKSPACE KiB, which could fill up in just a
 few more runs.
 EOF
 fi
+
+# *********************************************
+$LOGCMDNOLVL echo Completed alert check

@@ -17,3 +17,5 @@ find "$HOME/ROOT/static/reports/" -xdev -depth -name 'tmp.*' -type f -mtime +"$D
 find "$XDG_CACHE_HOME"/testclutchlogs -xdev -depth -type f -mtime +"$DAYS" -delete
 
 df "$XDG_CACHE_HOME"/testclutchlogs | $LOGCMDID clean-cache
+
+$LOGCMDNOLVL echo Completed cache clean
