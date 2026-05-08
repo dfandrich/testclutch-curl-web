@@ -36,7 +36,7 @@ environment from scratch by following these steps:
 0. Choose *NEW ENVIRONMENT*
 0. At the top of the environment topology diagram, click *SSL* and *enable wildcard SSL*
 0. in the *Application* block, choose *Apache Python*
-    - tested version: Apache 2.4.66
+    - tested version: Apache 2.4.67
     - tested version: Python 3.13.13
     - tested version: Almalinux 9
 0. Under *Application Servers*:
