@@ -21,7 +21,7 @@ MAILTO=dan@telarity.com
 # Alert job (timed to run soon after ingest + report job normally completes)
 11 3,9,15,21 * * * /var/www/webroot/ROOT/application/bin/alert-job
 
-# Daily cache clean job
+# Daily cache clean job (timed to run immediately before ingest job)
 8 0,12 * * * systemd-cat /var/www/webroot/ROOT/application/bin/clean-cache-job
 # Blank line at end (because we're asked to)
 # TESTCLUTCH END
