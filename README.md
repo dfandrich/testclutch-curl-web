@@ -56,9 +56,11 @@ environment from scratch by following these steps:
 0. In *Application Servers*, *Settings→Volumes*
     - Choose Add, Data Container, Shared Storage node, click checkbox for
       `/data /data`, then *Add*, *Apply*
-0. In *<your environment>*, *Settings→Load Alerts*
+0. In *<your environment>*, *Settings→Load Alerts*, *Application Servers*
     - Change the *auto_alert_cpu* threshold to 99% and duration to 60 minutes
       (the batch jobs are expected to run with 100% CPU for some time)
+10. In *<your environment>*, *Settings→Load Alerts*, *Storage Containers*
+    - Change the *auto_alert_cpu* threshold to 80% and duration to 5 minutes
     - Change the *auto_alert_disk* threshold to 95%.
 
 # Deployment
