@@ -39,4 +39,19 @@ EOF
 fi
 
 # *********************************************
+# Check for new missing tests
+TMPFILE="$(mktemp)"
+xmlstarlet sel -t -v "/html/body/table[@id='missing']" "${XDG_DATA_HOME}/reports/tests-run.html" >"$TMPFILE" 2>/dev/null
+if [[ -s "$TMPFILE" && "$(sha256sum < "$TMPFILE")" != "$(< "${XDG_DATA_HOME}/last_missing_hash")" ]]; then
+    NUMTESTS=$(( $(wc -l < "$TMPFILE") - 1))
+    send-alert <<EOF
+Missing tests have been detected
+$NUMTESTS tests that used to run are now missing.
+See https://testclutch.curl.se/static/reports/tests-run.html#missing
+EOF
+fi
+sha256sum < "$TMPFILE" > "${XDG_DATA_HOME}/last_missing_hash"
+rm -f "$TMPFILE"
+
+# *********************************************
 $LOGCMDNOLVL echo Completed alert check
