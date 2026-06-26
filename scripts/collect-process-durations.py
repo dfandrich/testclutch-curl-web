@@ -74,9 +74,9 @@ def process_log(regex: str, fn: str) -> list[tuple[float, int, str]]:
     return results
 
 
-def analyze(times: list):
+def analyze(times: list[tuple[float, int, str]]):
     lastsess = -1
-    lasttime = 0
+    lasttime = 0.
     lastversion = ''
     version = ''
     comment = 0
@@ -113,7 +113,7 @@ def analyze(times: list):
                         lastversion = version
 
                 lastsess = -1
-                lasttime = 0
+                lasttime = 0.
             elif 'version' in message:
                 version = message.split()[1]
             elif 'comment' in message:

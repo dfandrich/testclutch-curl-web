@@ -11,6 +11,7 @@ import os
 import re
 import struct
 import sys
+from typing import Callable
 
 # Number of hours to use in the expires header
 EXPIRE_HOURS = 1
@@ -81,7 +82,7 @@ def safe_path(path: str) -> bool:
             and os.path.isfile(get_static_path(path)))
 
 
-def application(environ, start_response) -> list[bytes]:
+def application(environ: dict[str, str], start_response: Callable) -> list[bytes]:
     path = environ['PATH_INFO']
     if path == '/':
         path = '/' + INDEX_PATH
