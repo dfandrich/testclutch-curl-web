@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 1
           # This is buggy and causes an error when the triggering condition is a tag. Since the
@@ -34,7 +34,7 @@ jobs:
           # at the default false.
           # https://github.com/actions/checkout/issues/1467
           # fetch-tags: true
-      - uses: actions/cache@v5
+      - uses: actions/cache@v6
         with:
           path: ~/.cache/pip
           # Basing the key on only the testclutch requirements means that any updates to pip
