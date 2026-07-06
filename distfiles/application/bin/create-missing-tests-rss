@@ -1,0 +1,74 @@
+#!/bin/bash
+# Create an RSS feed file from the missing tests report
+REPORT="${1:-../testclutch/tests-run.html}"
+RSS="${2:-tests-run-missing.rss}"
+
+# Maximum number of tests to include directly in the feed
+MAXTESTS=100
+
+TMPFILE="$(mktemp)"
+xmlstarlet sel -t -m "/html/body/table[@id='missing']/tr" -v "td[1]" -o ' ' -v "td[2]" -nl "$REPORT" > "$TMPFILE"
+
+NOW="$(TZ=UTC date --iso-8601=seconds)"
+cat <<EOF > "$RSS"
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>curl recently missing tests</title>
+  <subtitle>This feed contains curl tests that were previously running but that have recently stopped
+  reporting results.  The main reasons for this are that the tests were simply deleted, or that the
+  test environment changed, causing some tests to be unable to run.
+  </subtitle>
+  <id>https://testclutch.curl.se/static/reports/${RSS}</id>
+  <link rel="self" href="https://testclutch.curl.se/static/reports/${RSS}"/>
+  <author>
+    <name>Test Clutch</name>
+    <uri>https://testclutch.curl.se/</uri>
+  </author>
+  <updated>${NOW}</updated>
+
+EOF
+
+if [[ -s "$TMPFILE" ]]; then
+  # There is at least one test missing.
+  # Generate a version 8 (custom) UUID. The current year & month is included and (most of) the rest
+  # is a hash of the content of the missing tests.  Including the YYMM means that 1) the same set of
+  # tests failing in the future creates a new UUID, but 2) also means that if the month changes when
+  # the tests don't, an apparently "new" entry will be created.  The time inclusion means that a
+  # ver. 3 hash UUID isn't quite appropriate.
+  # This is intended for users to treat new items in their RSS readers as alerts, without having
+  # to maintain the state of previous missing tests between invocations of this script.
+  HASH="$(sha256sum "$TMPFILE" | head -26c)"
+  UUID="$(TZ=UTC date +"%y%m")${HASH:0:4}-${HASH:4:4}-8${HASH:8:3}-8${HASH:11:3}-${HASH:14:12}"
+  cat <<EOF >> "$RSS"
+  <entry>
+    <author>
+      <name>Test Clutch</name>
+      <uri>https://testclutch.curl.se/</uri>
+    </author>
+    <link rel="alternate" href="https://testclutch.curl.se/static/reports/tests-run.html#missing"/>
+    <logo>https://testclutch.curl.se/images/test-clutch-logo.svg</logo>
+    <id>urn:uuid:${UUID}</id>
+    <updated>${NOW}</updated>
+    <title>$(wc -l < "$TMPFILE") recently missing tests $(date +"%B %Y")</title>
+      <content>
+Test Type   Test Name
+EOF
+
+  # HTML escape text in the entry
+  head -"$MAXTESTS" "$TMPFILE" | sed -e 's/&/&amp;/g' -e 's/</&lt;/g' -e 's/>/&gt;/g' >> "$RSS"
+
+  if [[ "$(wc -l < "$TMPFILE")" -gt "$MAXTESTS" ]]; then
+      echo "(remaining tests are elided)" >> "$RSS"
+  fi
+
+  cat <<EOF >> "$RSS"
+      </content>
+    </entry>
+EOF
+fi
+
+cat <<EOF >> "$RSS"
+</feed>
+EOF
+
+rm -f "$TMPFILE"

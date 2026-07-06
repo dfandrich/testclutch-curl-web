@@ -149,6 +149,8 @@ else
         $LOGCMD echo "${ERRLVL}Empty tests_run report file"
     fi
 
+    create-missing-tests-rss "$REPORTROOT"/tests-run.html "$REPORTROOT"/tests-run-missing.rss
+
     REPORTTMP="$(mktemp "$REPORTROOT/tmp.XXXXXXXXXX")"
     tcanalysissum $VERBOSITY --html 2>&1 > "$REPORTTMP" | $LOGCMDID tcanalysissum || $LOGFAILURE
     if [[ -s "$REPORTTMP" ]]; then
