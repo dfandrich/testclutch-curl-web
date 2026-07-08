@@ -18,8 +18,9 @@ cat <<EOF > "$RSS"
   reporting results.  The main reasons for this are that the tests were simply deleted, or that the
   test environment changed, causing some tests to be unable to run.
   </subtitle>
-  <id>https://testclutch.curl.se/static/reports/${RSS}</id>
-  <link rel="self" href="https://testclutch.curl.se/static/reports/${RSS}"/>
+  <id>https://testclutch.curl.se/static/reports/$(basename "${RSS}")</id>
+  <link rel="self" href="https://testclutch.curl.se/static/reports/$(basename "${RSS}")"/>
+  <logo>https://testclutch.curl.se/images/test-clutch-logo.svg</logo>
   <author>
     <name>Test Clutch</name>
     <uri>https://testclutch.curl.se/</uri>
@@ -46,7 +47,6 @@ if [[ -s "$TMPFILE" ]]; then
       <uri>https://testclutch.curl.se/</uri>
     </author>
     <link rel="alternate" href="https://testclutch.curl.se/static/reports/tests-run.html#missing"/>
-    <logo>https://testclutch.curl.se/images/test-clutch-logo.svg</logo>
     <id>urn:uuid:${UUID}</id>
     <updated>${NOW}</updated>
     <title>$(wc -l < "$TMPFILE") recently missing tests $(date +"%B %Y")</title>
