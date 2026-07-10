@@ -19,6 +19,7 @@ cat <<EOF > "$RSS"
   <id>${BASEURL}static/reports/$(basename "${RSS}")</id>
   <link rel="self" href="${BASEURL}static/reports/$(basename "${RSS}")"/>
   <logo>${BASEURL}images/test-clutch-logo.svg</logo>
+  <icon>${BASEURL}images/test-clutch-icon.png</icon>
   <author>
     <name>Test Clutch</name>
     <uri>${BASEURL}</uri>
