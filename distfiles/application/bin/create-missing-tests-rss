@@ -70,3 +70,8 @@ cat <<EOF >> "$RSS"
 EOF
 
 rm -f "$TMPFILE"
+
+# Add a link from the report page to this RSS feed page
+if ! grep -q '<link .*application/rss+xml' "$REPORT"; then
+    sed -i -e '/<\/head>/i\<link rel="alternate" title="curl recently missing tests RSS" href="'"${BASEURL}static/reports/$(basename "${RSS}")"'" type="application/rss+xml" />' "$REPORT"
+fi
