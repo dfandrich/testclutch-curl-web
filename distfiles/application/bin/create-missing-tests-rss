@@ -1,7 +1,7 @@
 #!/bin/bash
 # Create an RSS feed file from the missing tests report
 REPORT="${1:-../testclutch/tests-run.html}"
-RSS="${2:-tests-run-missing.rss}"
+RSS="${2:-tests-run-missing.atom}"
 BASEURL=https://testclutch.curl.se/
 
 # Maximum number of tests to include directly in the feed
@@ -73,6 +73,6 @@ EOF
 rm -f "$TMPFILE"
 
 # Add a link from the report page to this RSS feed page
-if ! grep -q '<link .*application/rss+xml' "$REPORT"; then
-    sed -i -e '/<\/head>/i\<link rel="alternate" title="curl recently missing tests RSS" href="'"${BASEURL}static/reports/$(basename "${RSS}")"'" type="application/rss+xml" />' "$REPORT"
+if ! grep -q '<link .*application/atom+xml' "$REPORT"; then
+    sed -i -e '/<\/head>/i\<link rel="alternate" title="curl recently missing tests RSS" href="'"${BASEURL}static/reports/$(basename "${RSS}")"'" type="application/atom+xml" />' "$REPORT"
 fi
