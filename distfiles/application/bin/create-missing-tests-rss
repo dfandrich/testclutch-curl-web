@@ -14,10 +14,7 @@ cat <<EOF > "$RSS"
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>curl recently missing tests</title>
-  <subtitle>This feed contains curl tests that were previously running but that have recently stopped
-  reporting results.  The main reasons for this are that the tests were simply deleted, or that the
-  test environment changed, causing some tests to be unable to run.
-  </subtitle>
+  <subtitle>curl tests that were previously running but that have recently stopped</subtitle>
   <id>https://testclutch.curl.se/static/reports/$(basename "${RSS}")</id>
   <link rel="self" href="https://testclutch.curl.se/static/reports/$(basename "${RSS}")"/>
   <logo>https://testclutch.curl.se/images/test-clutch-logo.svg</logo>
@@ -35,7 +32,7 @@ if [[ -s "$TMPFILE" ]]; then
   # is a hash of the content of the missing tests.  Including the YYMM means that 1) the same set of
   # tests failing in the future creates a new UUID, but 2) also means that if the month changes when
   # the tests don't, an apparently "new" entry will be created.  The time inclusion means that a
-  # ver. 3 hash UUID isn't quite appropriate.
+  # ver. 3 or 5 hash UUID isn't quite appropriate.
   # This is intended for users to treat new items in their RSS readers as alerts, without having
   # to maintain the state of previous missing tests between invocations of this script.
   HASH="$(sha256sum "$TMPFILE" | head -26c)"
