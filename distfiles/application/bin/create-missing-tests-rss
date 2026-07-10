@@ -2,6 +2,7 @@
 # Create an RSS feed file from the missing tests report
 REPORT="${1:-../testclutch/tests-run.html}"
 RSS="${2:-tests-run-missing.rss}"
+BASEURL=https://testclutch.curl.se/
 
 # Maximum number of tests to include directly in the feed
 MAXTESTS=100
@@ -15,12 +16,12 @@ cat <<EOF > "$RSS"
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>curl recently missing tests</title>
   <subtitle>curl tests that were previously running but that have recently stopped</subtitle>
-  <id>https://testclutch.curl.se/static/reports/$(basename "${RSS}")</id>
-  <link rel="self" href="https://testclutch.curl.se/static/reports/$(basename "${RSS}")"/>
-  <logo>https://testclutch.curl.se/images/test-clutch-logo.svg</logo>
+  <id>${BASEURL}static/reports/$(basename "${RSS}")</id>
+  <link rel="self" href="${BASEURL}static/reports/$(basename "${RSS}")"/>
+  <logo>${BASEURL}images/test-clutch-logo.svg</logo>
   <author>
     <name>Test Clutch</name>
-    <uri>https://testclutch.curl.se/</uri>
+    <uri>${BASEURL}</uri>
   </author>
   <updated>${NOW}</updated>
 
@@ -41,9 +42,9 @@ if [[ -s "$TMPFILE" ]]; then
   <entry>
     <author>
       <name>Test Clutch</name>
-      <uri>https://testclutch.curl.se/</uri>
+      <uri>${BASEURL}</uri>
     </author>
-    <link rel="alternate" href="https://testclutch.curl.se/static/reports/tests-run.html#missing"/>
+    <link rel="alternate" href="${BASEURL}static/reports/tests-run.html#missing"/>
     <id>urn:uuid:${UUID}</id>
     <updated>${NOW}</updated>
     <title>$(wc -l < "$TMPFILE") recently missing tests $(date +"%B %Y")</title>
