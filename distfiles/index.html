@@ -86,12 +86,16 @@ be determined.
 
 <details><summary><a href="static/reports/tests-run.html">Recently-run
             tests</a></summary>
-This report shows a list of tests that have recently been run to completion. It
-is grouped by test format and lists all tests that have been fully run at least
-once during the period of interest. Tests that are always skipped or that show
-failures to completely run (as opposed to tests that run but return a failing
-result) do not show in the list. It can be used to see if tests that are
-expected to be run are actually running somewhere and returning valid results.
+This report shows a list of tests that have recently been run to completion, as
+well as a separate list of tests that used to run but haven't run very
+recently. The run tests are grouped by test format and show all tests that have
+been fully run at least once during the period of interest; tests that are
+always skipped or that fail to completely run (as opposed to tests that run but
+return a failing result) do not show in that list. The missing tests section
+only exists if there have been missing tests recently. That shows when tests stop
+running due to unexpected environmental changes (as well as when they are
+simply deleted). The missing tests are also available as an experimental RSS
+feed.
 </details>
 <br>
 
