@@ -11,7 +11,7 @@ import os
 import re
 import struct
 import sys
-from typing import Callable
+from collections.abc import Callable
 
 # Number of hours to use in the expires header
 EXPIRE_HOURS = 1
@@ -45,7 +45,7 @@ def get_static(fn: str) -> bytes:
 
 def get_static_headers(fn: str) -> list[tuple[str, str]]:
     response_headers = []
-    mime, encoding = mimetypes.guess_type(get_static_path(fn))
+    mime, _encoding = mimetypes.guess_type(get_static_path(fn))
     if mime:
         response_headers.append(('Content-Type', f'{mime}; charset={CHARSET}'))
 
