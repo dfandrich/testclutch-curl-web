@@ -8,7 +8,7 @@ BASEURL=https://testclutch.curl.se/
 MAXTESTS=100
 
 TMPFILE="$(mktemp)"
-xmlstarlet sel -t -m "/html/body/table[@id='missing']/tr" -v "td[1]" -o ' ' -v "td[2]" -nl "$REPORT" > "$TMPFILE"
+xmlstarlet sel -t -m "/html/body/table[@id='missing']/tr[not(th)]" -v "td[1]" -o ' ' -v "td[2]" -nl "$REPORT" > "$TMPFILE"
 
 NOW="$(TZ=UTC date --iso-8601=seconds)"
 cat <<EOF > "$RSS"
