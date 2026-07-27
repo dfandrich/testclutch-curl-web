@@ -24,7 +24,7 @@ readonly ERRLVL='<3>'
 readonly VERBOSITY="--verbose --level-prefix"
 
 $LOGCMDNOLVL echo Starting PR analysis
-$LOGCMDNOLVL echo "version $(cat "$HOME/ROOT/version.txt")"
+$LOGCMDNOLVL echo "version $(< "$HOME/ROOT/version.txt")"
 
 # Check for adequate disk space before starting
 if [[ "$(df --output=avail -k "$XDG_CACHE_HOME" | tail -1)" -lt "$MINSPACE" ]]; then
@@ -41,7 +41,7 @@ fi
 
 PRTMP="$(mktemp)"
 tcanalyzepr $VERBOSITY --authfile "$XDG_DATA_HOME/auth/ghatoken" --ci-status --ready-prs --only-failed-prs 2>&1 > "$PRTMP" | $LOGCMDID tcanalyzepr || $LOGFAILURE
-PRS="$(cat "$PRTMP")"
+PRS="$(< "$PRTMP")"
 rm -f "$PRTMP"
 if [[ -z "$PRS" ]]; then
     $LOGCMDNOLVL echo 'No PRs are ready to check'

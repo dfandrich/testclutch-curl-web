@@ -33,7 +33,7 @@ EDITOR="$(dirname "$0")"/install-cron-jobs crontab -e
 # SETUPVERSION changing.
 # Note that /data is mounted on demand (so it's not there before the first
 # access) then unmounted automatically again after a few minutes.
-if [[ "$(cat "$XDG_DATA_HOME/setup-version")" == "$SETUPVERSION" ]]; then
+if [[ "$(< "$XDG_DATA_HOME/setup-version")" == "$SETUPVERSION" ]]; then
 # If we've already run this script before at this version. it means either:
 # - someone has done "Redeploy Containers" with "Keep volume data" on,
 #   in which case there's nothing more to set up, or

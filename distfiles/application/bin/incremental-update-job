@@ -46,7 +46,7 @@ readonly REPORTROOT="$HOME/ROOT/static/reports"
 readonly FIRST_COMMIT=ff67da58c4add27b05d237533d1cb39fb3894113
 
 $LOGCMDNOLVL echo Starting daily update
-$LOGCMDNOLVL echo "version $(cat "$HOME/ROOT/version.txt")"
+$LOGCMDNOLVL echo "version $(< "$HOME/ROOT/version.txt")"
 
 # Check for adequate disk space before starting
 if [[ "$(df --output=avail -k "$XDG_DATA_HOME" | tail -1)" -lt "$MINSPACE" ]]; then
@@ -61,10 +61,10 @@ fi
 readonly LOCKFILE="$XDG_RUNTIME_DIR"/tc-update.lock
 
 if [[ -e "$LOCKFILE" ]]; then
-    $LOGCMDNOLVL echo "Update lock already exists (PID $(cat "$LOCKFILE"))"
+    $LOGCMDNOLVL echo "Update lock already exists (PID $(< "$LOCKFILE"))"
     $LOGCMDNOLVL echo -n Lock created:
     $LOGCMDNOLVL ls -l "$LOCKFILE"
-    if ps -p "$(cat "$LOCKFILE")" > /dev/null; then
+    if ps -p "$(< "$LOCKFILE")" > /dev/null; then
         $LOGCMD echo "${ERRLVL}Aborted daily update"
         exit 1
     fi
