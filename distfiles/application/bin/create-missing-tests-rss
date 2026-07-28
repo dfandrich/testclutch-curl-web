@@ -35,6 +35,9 @@ cat <<EOF > "$RSS"
 
 EOF
 
+NUMMISSING=$(wc -l < "$TMPFILE")
+MISSINGPLURAL=
+[[ "${NUMMISSING}" != 1 ]] && MISSINGPLURAL=s
 if [[ -s "$TMPFILE" ]]; then
   # There is at least one test missing.
   # Generate a version 8 (custom) UUID. The current year & month is included and (most of) the rest
@@ -55,7 +58,7 @@ if [[ -s "$TMPFILE" ]]; then
     <link rel="alternate" href="${BASEURL}static/reports/tests-run.html#missing"/>
     <id>urn:uuid:${UUID}</id>
     <updated>${NOW}</updated>
-    <title>$(wc -l < "$TMPFILE") recently missing tests $(date +"%B %Y")</title>
+    <title>${NUMMISSING} recently missing test${MISSINGPLURAL} $(date +"%B %Y")</title>
       <content>
 Test Type   Test Name
 EOF
@@ -63,7 +66,7 @@ EOF
   # HTML escape text in the entry
   head -"$MAXTESTS" "$TMPFILE" | sed -e 's/&/&amp;/g' -e 's/</&lt;/g' -e 's/>/&gt;/g' >> "$RSS"
 
-  if [[ "$(wc -l < "$TMPFILE")" -gt "$MAXTESTS" ]]; then
+  if [[ "${NUMMISSING}" -gt "$MAXTESTS" ]]; then
       echo "(remaining tests are elided)" >> "$RSS"
   fi
 
