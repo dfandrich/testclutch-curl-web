@@ -9,8 +9,8 @@ project to a host running Virtuozzo Application Platform cloud service.
 The latest source can be obtained from
 https://github.com/dfandrich/testclutch-curl-web/
 
-The build scripts require Python 3 (ver. 3.9 or higher) with the `pip` package,
-as well as `git` and `xz`.
+The build scripts require Python 3 (ver. 3.10 or higher) with the `pip`
+package, as well as `git` and `xz`.
 
 Run `./builddeployment` to create `testclutch_deploy.tar.xz`, a deployment
 bundle that contains the static web content, Python source code as well as all
@@ -52,7 +52,7 @@ environment from scratch by following these steps:
     - horizontal scaling: stateless
     - auto-clustering: OFF
     - access via SLB: OFF
-    - disk limit 75 GB
+    - disk limit 80 GB
 0. In *Application Servers*, *Settings→Volumes*
     - Choose Add, Data Container, Shared Storage node, click checkbox for
       `/data /data`, then *Add*, *Apply*
