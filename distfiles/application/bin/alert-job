@@ -41,7 +41,9 @@ fi
 # *********************************************
 # Check for new missing tests
 TMPFILE="$(mktemp)"
-xmlstarlet sel -t -v "/html/body/table[@id='missing']" "${XDG_DATA_HOME}/reports/tests-run.html" >"$TMPFILE" 2>/dev/null
+# Remove the <link> tag that is added by create-missing-tests-rss since it
+# can't be added as XHTML.
+grep -v '<link' "${XDG_DATA_HOME}/reports/tests-run.html" | xmlstarlet sel -t -v "/html/body/table[@id='missing']" >"$TMPFILE" 2>/dev/null
 if [[ -s "$TMPFILE" && "$(sha256sum < "$TMPFILE")" != "$(< "${XDG_DATA_HOME}/last_missing_hash")" ]]; then
     NUMTESTS=$(( $(wc -l < "$TMPFILE") - 1))
     send-alert <<EOF
